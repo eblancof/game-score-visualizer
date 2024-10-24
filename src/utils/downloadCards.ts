@@ -8,47 +8,59 @@ export const downloadCards = async (cards: GameData[][]) => {
     const cardElement = cardElements[i] as HTMLElement;
     if (cardElement) {
       try {
-        // Clone the card element to modify it for download
+        // Create a wrapper div for better rendering
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'fixed';
+        wrapper.style.top = '0';
+        wrapper.style.left = '0';
+        wrapper.style.width = '1080px';
+        wrapper.style.height = '1080px';
+        wrapper.style.zIndex = '-9999';
+        wrapper.style.backgroundColor = '#ffffff';
+        
+        // Clone the card and prepare it for capture
         const clonedCard = cardElement.cloneNode(true) as HTMLElement;
-        document.body.appendChild(clonedCard);
-        
-        // Set fixed dimensions for the download
-        clonedCard.style.width = '2056px';
-        clonedCard.style.height = '2056px';
-        clonedCard.style.position = 'fixed';
-        clonedCard.style.top = '-9999px';
-        clonedCard.style.left = '-9999px';
-        
+        clonedCard.style.position = 'relative';
+        clonedCard.style.width = '100%';
+        clonedCard.style.height = '100%';
+        clonedCard.style.transform = 'none';
+        wrapper.appendChild(clonedCard);
+        document.body.appendChild(wrapper);
+
+        // Wait for images to load
+        const images = clonedCard.getElementsByTagName('img');
+        await Promise.all(Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise(resolve => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        }));
+
+        // Capture the card
         const canvas = await html2canvas(clonedCard, {
-          width: 2056,
-          height: 2056,
-          scale: 1,
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
           backgroundColor: '#ffffff',
+          width: 1080,
+          height: 1080,
           logging: false,
-          onclone: (document, element) => {
-            // Adjust font sizes for the download version
-            element.querySelectorAll('.text-sm, .text-base, .text-lg').forEach(el => {
-              (el as HTMLElement).style.fontSize = '24px';
-            });
-            element.querySelectorAll('.text-xs').forEach(el => {
-              (el as HTMLElement).style.fontSize = '20px';
-            });
-            // Adjust logo sizes for the download version
-            element.querySelectorAll('[class*="w-24"], [class*="w-32"]').forEach(el => {
-              (el as HTMLElement).style.width = '192px';
-            });
-            element.querySelectorAll('[class*="h-12"], [class*="h-16"]').forEach(el => {
-              (el as HTMLElement).style.height = '96px';
-            });
+          onclone: (_, element) => {
+            // Ensure text is crisp
+            element.style.fontSmooth = 'always';
+            element.style.webkitFontSmoothing = 'antialiased';
+            element.style.textRendering = 'optimizeLegibility';
           }
         });
 
-        // Remove the cloned element
-        document.body.removeChild(clonedCard);
+        // Clean up
+        document.body.removeChild(wrapper);
 
+        // Download the image
         const link = document.createElement('a');
         link.download = `basketball-results-card-${i + 1}.png`;
-        link.href = canvas.toDataURL('image/png');
+        link.href = canvas.toDataURL('image/png', 1.0);
         link.click();
       } catch (error) {
         console.error(`Error generating card ${i + 1}:`, error);

@@ -30,29 +30,33 @@ const GameCard: React.FC<GameCardProps> = ({ games }) => {
                   alt={game.localTeam.club.name}
                   className="w-8 h-8 sm:w-12 sm:h-12 lg:w-16 lg:h-16 rounded-full object-cover flex-shrink-0"
                 />
-                <span className="font-semibold truncate text-center mx-1 sm:mx-3 flex-grow text-xs sm:text-sm lg:text-base">
-                  {game.localTeam.club.name.split(' ').map((word, index) => (
-                    <React.Fragment key={index}>
-                      {word.toUpperCase()}
-                      {index < game.localTeam.club.name.split(' ').length - 1 && ' '}
-                      {index === Math.floor(game.localTeam.club.name.split(' ').length / 2) && <br />}
-                    </React.Fragment>
-                  ))}
-                </span>
+                <div className="font-semibold text-center mx-1 sm:mx-3 flex-grow text-xs sm:text-sm lg:text-base min-h-[2.5em] flex items-center justify-center">
+                  <span className="leading-tight">
+                    {game.localTeam.club.name.split(' ').map((word, index) => (
+                      <React.Fragment key={index}>
+                        {word.toUpperCase()}
+                        {index < game.localTeam.club.name.split(' ').length - 1 && ' '}
+                        {index === Math.floor(game.localTeam.club.name.split(' ').length / 2) && <br />}
+                      </React.Fragment>
+                    ))}
+                  </span>
+                </div>
               </div>
               <div className="text-base sm:text-xl lg:text-2xl font-bold w-[20%] text-center flex-shrink-0">
                 {game.localScore ?? '-'} - {game.visitorScore ?? '-'}
               </div>
               <div className="flex items-center justify-between w-[40%] overflow-hidden">
-                <span className="font-semibold truncate text-center mr-1 sm:mr-3 flex-grow text-xs sm:text-sm lg:text-base">
-                  {game.visitorTeam.club.name.split(' ').map((word, index) => (
-                    <React.Fragment key={index}>
-                      {word.toUpperCase()}
-                      {index < game.visitorTeam.club.name.split(' ').length - 1 && ' '}
-                      {index === Math.floor(game.visitorTeam.club.name.split(' ').length / 2) && <br />}
-                    </React.Fragment>
-                  ))}
-                </span>
+                <div className="font-semibold text-center mr-1 sm:mr-3 flex-grow text-xs sm:text-sm lg:text-base min-h-[2.5em] flex items-center justify-center">
+                  <span className="leading-tight">
+                    {game.visitorTeam.club.name.split(' ').map((word, index) => (
+                      <React.Fragment key={index}>
+                        {word.toUpperCase()}
+                        {index < game.visitorTeam.club.name.split(' ').length - 1 && ' '}
+                        {index === Math.floor(game.visitorTeam.club.name.split(' ').length / 2) && <br />}
+                      </React.Fragment>
+                    ))}
+                  </span>
+                </div>
                 <img
                   src={game.visitorTeam.shieldUrl}
                   alt={game.visitorTeam.club.name}
