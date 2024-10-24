@@ -24,7 +24,6 @@ const App: React.FC = () => {
         setGames(data);
         const generatedCards = generateCards(data);
         setCards(generatedCards);
-        console.log('Generated cards:', generatedCards); // Debug log
       } catch (err) {
         setError('Failed to fetch game data. Please try again.');
         console.error('Error fetching game data:', err);
@@ -51,21 +50,23 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-red-500 to-white p-4 sm:p-8">
+    <div className="min-h-screen bg-gradient-to-b from-red-500 to-white p-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4 sm:mb-8">Basketball Results Instagram Post Generator</h1>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-8 text-center">
+          Basketball Results Instagram Post Generator
+        </h1>
         <DateRangePicker onDateChange={handleDateChange} />
         <button
           onClick={handleDownload}
           disabled={loading || cards.length === 0}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center mt-4 mb-4 sm:mb-8 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center mx-auto mb-4 sm:mb-8 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Download className="mr-2" />
           Download Cards
         </button>
-        {error && <p className="text-red-600 mb-4">{error}</p>}
+        {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
         {loading ? (
-          <p className="text-white">Loading...</p>
+          <p className="text-white text-center">Loading...</p>
         ) : (
           <GameSlider cards={cards} />
         )}
