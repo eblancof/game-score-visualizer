@@ -43,7 +43,7 @@ const App: React.FC = () => {
   const handleDownload = async () => {
     try {
       await downloadCards(cards);
-    } catch (err) {
+    } catch (err) {   
       setError('Failed to download cards. Please try again.');
       console.error('Error downloading cards:', err);
     }
