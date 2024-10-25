@@ -104,7 +104,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ onDateChange }) => {
               type="submit"
               className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-2 px-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 w-full sm:w-auto focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 outline-none self-end justify-self-end"
             >
-              Update
+              Fetch data
             </button>
           </div>
         </div>

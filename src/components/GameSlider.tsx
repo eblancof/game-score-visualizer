@@ -86,7 +86,7 @@ const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOpti
 
   return (
     <div className="space-y-4">
-      <div className="relative w-full max-w-[1200px] mx-auto">
+      <div className="relative w-full max-w-[1080px] mx-auto">
         <div className="relative w-full" style={{ paddingBottom: '100%' }}>
           <div className="absolute inset-0 overflow-hidden">
             <div

@@ -15,7 +15,7 @@ export const GameCard: React.FC<GameCardProps> = ({ games }) => {
       <div className="w-full h-full p-[3%] flex flex-col justify-between">
         <CornerLogos className="h-[10%]" />
 
-        <div className="flex-1 flex flex-col justify-around">
+        <div className="flex-1 flex flex-col justify-around py-[2%]">
           {gamesList.map((game) => (
             <div
               key={game.id}
@@ -50,10 +50,10 @@ export const GameCard: React.FC<GameCardProps> = ({ games }) => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 px-[2%] py-[0.5%] bg-gray-100 rounded-lg text-[2vw] font-bold w-[20%] justify-center mx-[2%]">
-                  <span>{game.localScore ?? '-'}</span>
-                  <span className="text-gray-400">-</span>
-                  <span>{game.visitorScore ?? '-'}</span>
+                <div className="flex items-center justify-center gap-2 px-[2%] py-[0.5%] bg-gray-100 rounded-lg text-[2vw] font-bold w-[20%] mx-[2%]">
+                  <span className="inline-block min-w-[2ch] text-center">{game.localScore ?? '-'}</span>
+                  <span>-</span>
+                  <span className="inline-block min-w-[2ch] text-center">{game.visitorScore ?? '-'}</span>
                 </div>
 
                 <div className="flex items-center justify-end w-[38%] gap-[3%]">
