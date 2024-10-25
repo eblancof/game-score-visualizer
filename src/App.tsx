@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Download } from 'lucide-react';
 import DateRangePicker from './components/DateRangePicker';
 import { fetchGameData } from './utils/api';
 import { GameData } from './types/gameData';
 import { generateCards } from './utils/cardGenerator';
-import { downloadCards } from './utils/downloadCards';
 import GameSlider from './components/GameSlider';
+import GameList from './components/GameList';
+import ViewToggle from './components/ViewToggle';
 
 const App: React.FC = () => {
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -14,6 +14,7 @@ const App: React.FC = () => {
   const [cards, setCards] = useState<GameData[][]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [view, setView] = useState<'slider' | 'list'>('slider');
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -40,35 +41,23 @@ const App: React.FC = () => {
     setEndDate(end);
   };
 
-  const handleDownload = async () => {
-    try {
-      await downloadCards(cards);
-    } catch (err) {   
-      setError('Failed to download cards. Please try again.');
-      console.error('Error downloading cards:', err);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-red-500 to-white p-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-[1200px] mx-auto">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-8 text-center">
           Basketball Results Instagram Post Generator
         </h1>
         <DateRangePicker onDateChange={handleDateChange} />
-        <button
-          onClick={handleDownload}
-          disabled={loading || cards.length === 0}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center mx-auto mb-4 sm:mb-8 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Download className="mr-2" />
-          Download Cards
-        </button>
+        
+        <ViewToggle view={view} onViewChange={setView} />
+        
         {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
         {loading ? (
           <p className="text-white text-center">Loading...</p>
-        ) : (
+        ) : view === 'slider' ? (
           <GameSlider cards={cards} />
+        ) : (
+          <GameList cards={cards} />
         )}
       </div>
     </div>
