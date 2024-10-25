@@ -9,11 +9,11 @@ interface ViewToggleProps {
 
 const ViewToggle: React.FC<ViewToggleProps> = ({ view, onViewChange }) => {
   return (
-    <div className="flex gap-2 mb-4">
+    <div className="flex flex-wrap justify-center gap-2">
       <Button
         variant={view === 'slider' ? 'default' : 'outline'}
         onClick={() => onViewChange('slider')}
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 whitespace-nowrap"
       >
         <Grid className="w-4 h-4" />
         Slider View
@@ -21,7 +21,7 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ view, onViewChange }) => {
       <Button
         variant={view === 'list' ? 'default' : 'outline'}
         onClick={() => onViewChange('list')}
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 whitespace-nowrap"
       >
         <Columns className="w-4 h-4" />
         List View

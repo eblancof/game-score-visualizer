@@ -21,7 +21,7 @@ export const GameCard: React.FC<GameCardProps> = ({ games }) => {
               key={game.id}
               className="flex flex-col items-center justify-center"
             >
-              <div className=" text-center mb-[1%] text-[1.6vw] font-medium text-gray-700 mx-auto">
+              <div className="text-center mb-[1%] text-[1.6vw] font-medium text-gray-700 mx-auto">
                 {new Date(game.date).toLocaleDateString('es-ES', {
                   weekday: 'long',
                   day: 'numeric',
@@ -39,7 +39,7 @@ export const GameCard: React.FC<GameCardProps> = ({ games }) => {
               </div>
 
               <div className="flex items-center justify-between w-full px-[3%]">
-                <div className="flex items-center w-[40%] gap-[3%]">
+                <div className="flex items-center w-[38%] gap-[3%]">
                   <img
                     src={game.localTeam.shieldUrl}
                     alt={game.localTeam.club.name}
@@ -50,11 +50,13 @@ export const GameCard: React.FC<GameCardProps> = ({ games }) => {
                   </div>
                 </div>
 
-                <div className="text-[2vw] font-bold w-[20%] text-center">
-                  {game.localScore ?? '-'} - {game.visitorScore ?? '-'}
+                <div className="flex items-center gap-2 px-[2%] py-[0.5%] bg-gray-100 rounded-lg text-[2vw] font-bold w-[20%] justify-center mx-[2%]">
+                  <span>{game.localScore ?? '-'}</span>
+                  <span className="text-gray-400">-</span>
+                  <span>{game.visitorScore ?? '-'}</span>
                 </div>
 
-                <div className="flex items-center justify-end w-[40%] gap-[3%]">
+                <div className="flex items-center justify-end w-[38%] gap-[3%]">
                   <div className="font-semibold text-center flex-1 text-[1.8vw]">
                     {game.visitorTeam.club.name.toUpperCase()}
                   </div>

@@ -10,6 +10,13 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ onDateChange }) => {
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
 
+  const handleDateTypeChange = (type: 'single' | 'range') => {
+    if (type === 'range' && singleDate && !startDate) {
+      setStartDate(singleDate);
+    }
+    setDateType(type);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (dateType === 'single' && singleDate) {
@@ -39,7 +46,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ onDateChange }) => {
                 type="radio"
                 value="single"
                 checked={dateType === 'single'}
-                onChange={(e) => setDateType(e.target.value as 'single' | 'range')}
+                onChange={(e) => handleDateTypeChange(e.target.value as 'single' | 'range')}
                 className="sr-only peer"
               />
               <div className="w-5 h-5 border-2 border-gray-300 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all duration-200 ease-in-out flex items-center justify-center">
@@ -52,7 +59,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ onDateChange }) => {
                 type="radio"
                 value="range"
                 checked={dateType === 'range'}
-                onChange={(e) => setDateType(e.target.value as 'single' | 'range')}
+                onChange={(e) => handleDateTypeChange(e.target.value as 'single' | 'range')}
                 className="sr-only peer"
               />
               <div className="w-5 h-5 border-2 border-gray-300 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all duration-200 ease-in-out flex items-center justify-center">

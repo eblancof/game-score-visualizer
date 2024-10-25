@@ -49,7 +49,10 @@ const App: React.FC = () => {
         </h1>
         <DateRangePicker onDateChange={handleDateChange} />
         
-        <ViewToggle view={view} onViewChange={setView} />
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-6">
+          <ViewToggle view={view} onViewChange={setView} />
+          {view === 'slider' && <GameSlider.ExportOptions />}
+        </div>
         
         {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
         {loading ? (

@@ -1,6 +1,6 @@
 import html2canvas from 'html2canvas';
 
-export const downloadCard = async (cardElement: HTMLElement, resolution: number) => {
+export const downloadCard = async (cardElement: HTMLElement, resolution: number, index?: number) => {
   if (!cardElement) return;
 
   try {
@@ -54,7 +54,10 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number)
 
     // Download the image
     const link = document.createElement('a');
-    link.download = `basketball-results-${resolution}x${resolution}.png`;
+    const filename = index 
+      ? `basketball-results-${index}-${resolution}x${resolution}.png`
+      : `basketball-results-${resolution}x${resolution}.png`;
+    link.download = filename;
     link.href = canvas.toDataURL('image/png', 1.0);
     link.click();
   } catch (error) {

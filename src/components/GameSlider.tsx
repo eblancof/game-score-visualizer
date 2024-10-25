@@ -1,16 +1,74 @@
 import React, { useState, useRef } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { Button } from "./ui/button";
 import { GameData } from '../types/gameData';
 import { GameCard } from './GameCard';
-import ExportOptions from './ExportOptions';
 import { downloadCard } from '../utils/downloadCards';
 
 interface GameSliderProps {
   cards: GameData[][];
 }
 
-const GameSlider: React.FC<GameSliderProps> = ({ cards }) => {
+const ExportOptions: React.FC = () => {
+  const [resolution, setResolution] = useState<1080 | 2056>(1080);
+
+  const handleExportCurrent = async () => {
+    const cardElement = document.querySelector('.game-card');
+    if (cardElement) {
+      await downloadCard(cardElement as HTMLElement, resolution);
+    }
+  };
+
+  const handleExportAll = async () => {
+    const cards = document.querySelectorAll('.game-card');
+    for (let i = 0; i < cards.length; i++) {
+      const card = cards[i];
+      await downloadCard(card as HTMLElement, resolution, i + 1);
+    }
+  };
+
+  return (
+    <div className="flex flex-wrap justify-center items-center gap-2">
+      <div className="flex gap-2 mr-4">
+        <Button
+          variant={resolution === 1080 ? "default" : "outline"}
+          onClick={() => setResolution(1080)}
+          className="whitespace-nowrap"
+        >
+          1080x1080
+        </Button>
+        <Button
+          variant={resolution === 2056 ? "default" : "outline"}
+          onClick={() => setResolution(2056)}
+          className="whitespace-nowrap"
+        >
+          2056x2056
+        </Button>
+      </div>
+
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          onClick={handleExportCurrent}
+          className="flex items-center gap-2 whitespace-nowrap"
+        >
+          <Download className="w-4 h-4" />
+          Download Current
+        </Button>
+        <Button
+          variant="outline"
+          onClick={handleExportAll}
+          className="flex items-center gap-2 whitespace-nowrap"
+        >
+          <Download className="w-4 h-4" />
+          Download All
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOptions } = ({ cards }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentCardRef = useRef<HTMLDivElement>(null);
 
@@ -26,21 +84,8 @@ const GameSlider: React.FC<GameSliderProps> = ({ cards }) => {
     );
   };
 
-  const handleExport = async (resolution: number) => {
-    try {
-      const cardElement = currentCardRef.current?.querySelector('.game-card');
-      if (cardElement) {
-        await downloadCard(cardElement as HTMLElement, resolution);
-      }
-    } catch (error) {
-      console.error('Error exporting card:', error);
-    }
-  };
-
   return (
     <div className="space-y-4">
-      <ExportOptions onExport={handleExport} />
-      
       <div className="relative w-full max-w-[1200px] mx-auto">
         <div className="relative w-full" style={{ paddingBottom: '100%' }}>
           <div className="absolute inset-0 overflow-hidden">
@@ -93,5 +138,7 @@ const GameSlider: React.FC<GameSliderProps> = ({ cards }) => {
     </div>
   );
 };
+
+GameSlider.ExportOptions = ExportOptions;
 
 export default GameSlider;
