@@ -6,11 +6,10 @@ interface GameListProps {
 }
 
 const GameList: React.FC<GameListProps> = ({ cards }) => {
-  // Flatten all games from all cards into a single array
   const allGames = cards.flat();
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto space-y-4">
+    <div className="w-full max-w-[1200px] mx-auto space-y-4 px-4">
       {allGames.map((game) => (
         <div
           key={game.id}
@@ -29,36 +28,40 @@ const GameList: React.FC<GameListProps> = ({ cards }) => {
             })}
           </div>
           
-          <div className="text-sm font-medium text-red-800 mb-3">
+          <div className="text-sm font-medium text-red-800 mb-4">
             {game.competition.name.toUpperCase()}
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 w-[38%]">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-3 justify-between">
+            <div className="flex items-center gap-3 w-full sm:w-[42%] justify-center sm:justify-start">
               <img
                 src={game.localTeam.shieldUrl}
                 alt={game.localTeam.club.name}
-                className="w-8 h-8 rounded-full object-cover"
+                className="w-8 h-8 rounded-full object-cover flex-shrink-0"
               />
-              <span className="font-medium">{game.localTeam.club.name}</span>
+              <span className="font-medium text-sm sm:text-base text-center sm:text-left">
+                {game.localTeam.club.name}
+              </span>
             </div>
 
-            <div className="flex items-center gap-2 px-4 py-1 bg-gray-100 rounded-lg mx-4">
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg w-full sm:w-auto justify-center flex-shrink-0">
               <span className="font-bold text-lg">
                 {game.localScore ?? '-'}
               </span>
-              <span className="text-gray-400">-</span>
+              <span className="font-bold text-lg">-</span>
               <span className="font-bold text-lg">
                 {game.visitorScore ?? '-'}
               </span>
             </div>
 
-            <div className="flex items-center gap-3 w-[38%] justify-end">
-              <span className="font-medium">{game.visitorTeam.club.name}</span>
+            <div className="flex items-center gap-3 w-full sm:w-[42%] justify-center sm:justify-end">
+              <span className="font-medium text-sm sm:text-base text-center sm:text-right">
+                {game.visitorTeam.club.name}
+              </span>
               <img
                 src={game.visitorTeam.shieldUrl}
                 alt={game.visitorTeam.club.name}
-                className="w-8 h-8 rounded-full object-cover"
+                className="w-8 h-8 rounded-full object-cover flex-shrink-0"
               />
             </div>
           </div>

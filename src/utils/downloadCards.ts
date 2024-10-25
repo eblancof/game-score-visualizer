@@ -20,11 +20,75 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
     // Clone the card and prepare it for capture
     const clonedCard = cardElement.cloneNode(true) as HTMLElement;
     clonedCard.style.position = 'absolute';
-    clonedCard.style.width = '100%';
-    clonedCard.style.height = '100%';
+    clonedCard.style.width = '1080px';
+    clonedCard.style.height = '1080px';
     clonedCard.style.transform = 'none';
     clonedCard.style.margin = '0';
     clonedCard.style.padding = '0';
+
+    // Force all elements to render at 1080px width
+    const exportStyles = document.createElement('style');
+    exportStyles.textContent = `
+      .game-card {
+        width: 1080px !important;
+        height: 1080px !important;
+      }
+      .game-card .text-center {
+        font-size: 17.28px !important;
+      }
+      .game-card .font-semibold {
+        font-size: 19.44px !important;
+      }
+      .game-card .font-bold {
+        font-size: 21.6px !important;
+      }
+      .game-card .text-gray-500 {
+        font-size: 13px !important;
+      }
+      .game-card img.rounded-full {
+        width: 54px !important;
+        height: 54px !important;
+      }
+      .game-card .w-[15%] {
+        width: 162px !important;
+      }
+      .game-card .w-[38%] {
+        width: 410.4px !important;
+      }
+      .game-card .w-[20%] {
+        width: 216px !important;
+      }
+      .game-card .p-[3%] {
+        padding: 32.4px !important;
+      }
+      .game-card .py-[2%] {
+        padding-top: 21.6px !important;
+        padding-bottom: 21.6px !important;
+      }
+      .game-card .px-[2%] {
+        padding-left: 21.6px !important;
+        padding-right: 21.6px !important;
+      }
+      .game-card .px-[3%] {
+        padding-left: 32.4px !important;
+        padding-right: 32.4px !important;
+      }
+      .game-card .gap-[3%] {
+        gap: 32.4px !important;
+      }
+      .game-card .mb-[1%] {
+        margin-bottom: 10.8px !important;
+      }
+      .game-card .mx-[2%] {
+        margin-left: 21.6px !important;
+        margin-right: 21.6px !important;
+      }
+      .game-card .aspect-[2/1] {
+        aspect-ratio: 2/1 !important;
+      }
+    `;
+    
+    clonedCard.appendChild(exportStyles);
     wrapper.appendChild(clonedCard);
     document.body.appendChild(wrapper);
 
@@ -38,9 +102,9 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       });
     }));
 
-    // Capture the card at base resolution
+    // Capture the card
     const canvas = await html2canvas(clonedCard, {
-      scale: 1, // Capture at 1:1 scale
+      scale: 1,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
