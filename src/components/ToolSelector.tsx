@@ -11,7 +11,7 @@ const ToolSelector: React.FC<ToolSelectorProps> = ({ tools, onSelectTool }) => {
     <div className="min-h-screen bg-gradient-to-b from-blue-500 to-white p-4">
       <div className="max-w-4xl mx-auto pt-8">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-8 text-center">
-          StackBlitz Tools
+          Social Network Basketball Tools
         </h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
