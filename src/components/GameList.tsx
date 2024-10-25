@@ -13,7 +13,7 @@ const GameList: React.FC<GameListProps> = ({ cards }) => {
       {allGames.map((game) => (
         <div
           key={game.id}
-          className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
+          className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-all duration-300"
         >
           <div className="text-sm text-gray-600 mb-2">
             {new Date(game.date).toLocaleDateString('es-ES', {
@@ -37,31 +37,31 @@ const GameList: React.FC<GameListProps> = ({ cards }) => {
               <img
                 src={game.localTeam.shieldUrl}
                 alt={game.localTeam.club.name}
-                className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                className="w-8 h-8 rounded-full object-cover shadow-sm ring-1 ring-black/5 flex-shrink-0"
               />
-              <span className="font-medium text-sm sm:text-base text-center sm:text-left">
+              <span className="font-medium text-sm sm:text-base text-center sm:text-left text-gray-800">
                 {game.localTeam.club.name}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg w-full sm:w-auto justify-center flex-shrink-0">
-              <span className="font-bold text-lg">
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg w-full sm:w-auto justify-center flex-shrink-0 shadow-sm">
+              <span className="font-bold text-lg text-gray-800">
                 {game.localScore ?? '-'}
               </span>
-              <span className="font-bold text-lg">-</span>
-              <span className="font-bold text-lg">
+              <span className="font-bold text-lg text-gray-800">-</span>
+              <span className="font-bold text-lg text-gray-800">
                 {game.visitorScore ?? '-'}
               </span>
             </div>
 
             <div className="flex items-center gap-3 w-full sm:w-[42%] justify-center sm:justify-end">
-              <span className="font-medium text-sm sm:text-base text-center sm:text-right">
+              <span className="font-medium text-sm sm:text-base text-center sm:text-right text-gray-800">
                 {game.visitorTeam.club.name}
               </span>
               <img
                 src={game.visitorTeam.shieldUrl}
                 alt={game.visitorTeam.club.name}
-                className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                className="w-8 h-8 rounded-full object-cover shadow-sm ring-1 ring-black/5 flex-shrink-0"
               />
             </div>
           </div>

@@ -4,7 +4,6 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
   if (!cardElement) return;
 
   try {
-    // Create a wrapper div for better rendering
     const wrapper = document.createElement('div');
     wrapper.style.position = 'fixed';
     wrapper.style.top = '0';
@@ -17,7 +16,6 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
     wrapper.style.alignItems = 'center';
     wrapper.style.justifyContent = 'center';
     
-    // Clone the card and prepare it for capture
     const clonedCard = cardElement.cloneNode(true) as HTMLElement;
     clonedCard.style.position = 'absolute';
     clonedCard.style.width = '1080px';
@@ -25,22 +23,34 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
     clonedCard.style.transform = 'none';
     clonedCard.style.margin = '0';
     clonedCard.style.padding = '0';
+    clonedCard.style.backgroundColor = '#ffffff';
 
-    // Force all elements to render at 1080px width
+    const allElements = clonedCard.getElementsByClassName('from-red-500');
+    Array.from(allElements).forEach((element: Element) => {
+      (element as HTMLElement).style.background = 'white';
+      element.classList.remove('from-red-500', 'to-white', 'bg-gradient-to-b');
+    });
+
     const exportStyles = document.createElement('style');
     exportStyles.textContent = `
       .game-card {
         width: 1080px !important;
         height: 1080px !important;
+        background-color: white !important;
+      }
+      .game-card > div {
+        background-color: white !important;
       }
       .game-card .text-center {
         font-size: 17.28px !important;
       }
       .game-card .font-semibold {
         font-size: 19.44px !important;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
       }
       .game-card .font-bold {
         font-size: 21.6px !important;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
       }
       .game-card .text-gray-500 {
         font-size: 13px !important;
@@ -48,6 +58,8 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       .game-card img.rounded-full {
         width: 54px !important;
         height: 54px !important;
+        filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15)) !important;
+        border: 1.5px solid rgba(255,255,255,0.8) !important;
       }
       .game-card .w-[15%] {
         width: 162px !important;
@@ -86,13 +98,21 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       .game-card .aspect-[2/1] {
         aspect-ratio: 2/1 !important;
       }
+      .game-card .bg-gray-100 {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08) !important;
+      }
+      .game-card .text-gray-800 {
+        text-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+      }
+      .game-card .text-red-800 {
+        text-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+      }
     `;
     
     clonedCard.appendChild(exportStyles);
     wrapper.appendChild(clonedCard);
     document.body.appendChild(wrapper);
 
-    // Wait for images to load
     const images = clonedCard.getElementsByTagName('img');
     await Promise.all(Array.from(images).map(img => {
       if (img.complete) return Promise.resolve();
@@ -102,9 +122,8 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       });
     }));
 
-    // Capture the card
     const canvas = await html2canvas(clonedCard, {
-      scale: 1,
+      scale: 2,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
@@ -118,34 +137,27 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       }
     });
 
-    // Create a new canvas for the final scaled image
     const finalCanvas = document.createElement('canvas');
     finalCanvas.width = resolution;
     finalCanvas.height = resolution;
     const ctx = finalCanvas.getContext('2d');
     
     if (ctx) {
-      // Use high-quality image scaling
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
       
-      // Clear the canvas with white background
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, resolution, resolution);
       
-      // Calculate dimensions to maintain aspect ratio
       const size = Math.min(resolution, resolution);
       const x = (resolution - size) / 2;
       const y = (resolution - size) / 2;
       
-      // Draw the image centered and scaled
       ctx.drawImage(canvas, x, y, size, size);
     }
 
-    // Clean up
     document.body.removeChild(wrapper);
 
-    // Download the image
     const link = document.createElement('a');
     const filename = index 
       ? `basketball-results-${index}-${resolution}x${resolution}.png`

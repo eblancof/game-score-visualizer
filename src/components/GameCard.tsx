@@ -21,7 +21,7 @@ export const GameCard: React.FC<GameCardProps> = ({ games }) => {
               key={game.id}
               className="flex flex-col items-center justify-center"
             >
-              <div className="text-center mb-[1%] mx-auto" style={{ fontSize: 'min(1.6vw, 17.28px)' }}>
+              <div className="text-center mb-[1%] mx-auto text-gray-800" style={{ fontSize: 'min(1.6vw, 17.28px)' }}>
                 {new Date(game.date).toLocaleDateString('es-ES', {
                   weekday: 'long',
                   day: 'numeric',
@@ -33,7 +33,7 @@ export const GameCard: React.FC<GameCardProps> = ({ games }) => {
                   minute: '2-digit',
                 })}{' '}
                 :{' '}
-                <span style={{ color: 'maroon' }}>
+                <span className="text-red-800 font-medium">
                   {game.competition.name.toUpperCase()}
                 </span>
               </div>
@@ -43,32 +43,32 @@ export const GameCard: React.FC<GameCardProps> = ({ games }) => {
                   <img
                     src={game.localTeam.shieldUrl}
                     alt={game.localTeam.club.name}
-                    className="rounded-full object-cover"
+                    className="rounded-full object-cover shadow-sm ring-1 ring-black/5"
                     style={{ width: 'min(15%, 54px)', aspectRatio: '1/1' }}
                   />
-                  <div className="font-semibold text-center flex-1" style={{ fontSize: 'min(1.8vw, 19.44px)' }}>
+                  <div className="font-semibold text-center flex-1 text-gray-800" style={{ fontSize: 'min(1.8vw, 19.44px)' }}>
                     {game.localTeam.club.name.toUpperCase()}
                   </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-2 px-[2%] py-[0.5%] bg-gray-100 rounded-lg w-[20%] mx-[2%]">
-                  <span className="inline-block min-w-[2ch] text-center font-bold" style={{ fontSize: 'min(2vw, 21.6px)' }}>
+                <div className="flex items-center justify-center gap-2 px-[2%] py-[0.5%] bg-gray-100 rounded-lg w-[20%] mx-[2%] shadow-sm">
+                  <span className="inline-block min-w-[2ch] text-center font-bold text-gray-800" style={{ fontSize: 'min(2vw, 21.6px)' }}>
                     {game.localScore ?? '-'}
                   </span>
-                  <span className="font-bold" style={{ fontSize: 'min(2vw, 21.6px)' }}>-</span>
-                  <span className="inline-block min-w-[2ch] text-center font-bold" style={{ fontSize: 'min(2vw, 21.6px)' }}>
+                  <span className="font-bold text-gray-800" style={{ fontSize: 'min(2vw, 21.6px)' }}>-</span>
+                  <span className="inline-block min-w-[2ch] text-center font-bold text-gray-800" style={{ fontSize: 'min(2vw, 21.6px)' }}>
                     {game.visitorScore ?? '-'}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-end w-[38%] gap-[3%]">
-                  <div className="font-semibold text-center flex-1" style={{ fontSize: 'min(1.8vw, 19.44px)' }}>
+                  <div className="font-semibold text-center flex-1 text-gray-800" style={{ fontSize: 'min(1.8vw, 19.44px)' }}>
                     {game.visitorTeam.club.name.toUpperCase()}
                   </div>
                   <img
                     src={game.visitorTeam.shieldUrl}
                     alt={game.visitorTeam.club.name}
-                    className="rounded-full object-cover"
+                    className="rounded-full object-cover shadow-sm ring-1 ring-black/5"
                     style={{ width: 'min(15%, 54px)', aspectRatio: '1/1' }}
                   />
                 </div>
