@@ -12,8 +12,10 @@ export function useLogos() {
   const [logos, setLogos] = useState<Logo[]>(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : [
-      { id: 'logo1', url: '', name: 'Logo 1' },
-      { id: 'logo2', url: '', name: 'Logo 2' }
+      { id: 'logo1', url: '', name: 'Top Left' },
+      { id: 'logo2', url: '', name: 'Top Right' },
+      { id: 'logo3', url: '', name: 'Bottom Left' },
+      { id: 'logo4', url: '', name: 'Bottom Right' }
     ];
   });
 

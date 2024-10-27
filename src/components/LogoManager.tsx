@@ -1,18 +1,16 @@
 import React from 'react';
 import { Button } from './ui/button';
 import { Logo } from '../hooks/useLogos';
+import { useLogos } from '../hooks/useLogos';
 
-interface LogoManagerProps {
-  logos: Logo[];
-  onLogoUpdate: (id: string, updates: Partial<Logo>) => void;
-}
+const LogoManager: React.FC = () => {
+  const { logos, updateLogo } = useLogos();
 
-const LogoManager: React.FC<LogoManagerProps> = ({ logos, onLogoUpdate }) => {
   const handleFileChange = async (id: string, file: File) => {
     try {
       const reader = new FileReader();
       reader.onloadend = () => {
-        onLogoUpdate(id, { url: reader.result as string });
+        updateLogo(id, { url: reader.result as string });
       };
       reader.readAsDataURL(file);
     } catch (error) {
@@ -22,12 +20,12 @@ const LogoManager: React.FC<LogoManagerProps> = ({ logos, onLogoUpdate }) => {
 
   return (
     <div className="bg-card rounded-xl shadow-md p-6 mb-8 border border-border/50">
-      <h2 className="text-lg font-semibold text-foreground mb-4">Corner Logos</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <h2 className="text-lg font-semibold text-foreground mb-4">Corner Logos Configuration</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {logos.map((logo) => (
-          <div key={logo.id} className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-8 bg-muted rounded-full overflow-hidden border border-border/50">
+          <div key={logo.id} className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="w-12 h-6 bg-muted rounded-lg overflow-hidden border border-border/50">
                 {logo.url ? (
                   <img
                     src={logo.url}
@@ -40,18 +38,13 @@ const LogoManager: React.FC<LogoManagerProps> = ({ logos, onLogoUpdate }) => {
                   </div>
                 )}
               </div>
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  {logo.name}
-                </label>
-                <input
-                  type="text"
-                  value={logo.name}
-                  onChange={(e) => onLogoUpdate(logo.id, { name: e.target.value })}
-                  className="w-full px-3 py-1 text-sm border border-border rounded-md bg-muted text-foreground focus:ring-1 focus:ring-primary focus:border-primary"
-                  placeholder="Logo name"
-                />
-              </div>
+              <input
+                type="text"
+                value={logo.name}
+                onChange={(e) => updateLogo(logo.id, { name: e.target.value })}
+                className="flex-1 px-2 py-1 text-sm border border-border rounded-md bg-muted text-foreground focus:ring-1 focus:ring-primary focus:border-primary"
+                placeholder="Logo name"
+              />
             </div>
             <div>
               <input
@@ -66,10 +59,11 @@ const LogoManager: React.FC<LogoManagerProps> = ({ logos, onLogoUpdate }) => {
               />
               <Button
                 variant="outline"
+                size="sm"
                 className="w-full hover:bg-accent hover:text-accent-foreground border-border/50"
                 onClick={() => document.getElementById(`logo-${logo.id}`)?.click()}
               >
-                {logo.url ? 'Change Logo' : 'Upload Logo'}
+                {logo.url ? 'Change' : 'Upload'}
               </Button>
             </div>
           </div>

@@ -6,7 +6,6 @@ import { generateCards } from '../utils/cardGenerator';
 import GameSlider from '../components/GameSlider';
 import GameList from '../components/GameList';
 import ViewToggle from '../components/ViewToggle';
-import LogoManager from '../components/LogoManager';
 import { useLogos } from '../hooks/useLogos';
 
 const GameScoreVisualizer: React.FC = () => {
@@ -17,7 +16,7 @@ const GameScoreVisualizer: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<'slider' | 'list'>('slider');
-  const { logos, updateLogo } = useLogos();
+  const { logos } = useLogos();
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -47,8 +46,6 @@ const GameScoreVisualizer: React.FC = () => {
   return (
     <div>
       <DateRangePicker onDateChange={handleDateChange} />
-      
-      <LogoManager logos={logos} onLogoUpdate={updateLogo} />
       
       <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-6">
         <ViewToggle view={view} onViewChange={setView} />

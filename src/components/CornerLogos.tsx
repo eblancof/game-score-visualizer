@@ -4,12 +4,15 @@ import { Logo } from '../hooks/useLogos';
 interface CornerLogosProps {
   className?: string;
   logos: Logo[];
+  position: 'top' | 'bottom';
 }
 
-const CornerLogos: React.FC<CornerLogosProps> = ({ className = '', logos }) => {
+const CornerLogos: React.FC<CornerLogosProps> = ({ className = '', logos, position }) => {
+  const positionLogos = position === 'top' ? logos.slice(0, 2) : logos.slice(2, 4);
+
   return (
     <div className={`flex justify-between items-center w-full ${className}`}>
-      {logos.map((logo) => (
+      {positionLogos.map((logo) => (
         <div key={logo.id} className="w-[15%] aspect-[2/1]">
           {logo.url ? (
             <img

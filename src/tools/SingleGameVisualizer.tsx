@@ -4,6 +4,7 @@ import { fetchGameData } from '../utils/api';
 import SingleGameCard from '../components/SingleGameCard';
 import SingleGamePicker from '../components/SingleGamePicker';
 import SingleGameExport from '../components/SingleGameExport';
+import { useLogos } from '../hooks/useLogos';
 
 const SingleGameVisualizer: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -11,6 +12,7 @@ const SingleGameVisualizer: React.FC = () => {
   const [selectedGame, setSelectedGame] = useState<GameData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { logos } = useLogos();
 
   const handleDateSelect = async (date: Date) => {
     setLoading(true);
@@ -44,7 +46,7 @@ const SingleGameVisualizer: React.FC = () => {
       {selectedGame && (
         <div className="mt-8 space-y-6">
           <SingleGameExport />
-          <SingleGameCard game={selectedGame} />
+          <SingleGameCard game={selectedGame} logos={logos} />
         </div>
       )}
     </div>

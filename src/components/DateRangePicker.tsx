@@ -33,7 +33,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ onDateChange }) => {
     }
   };
 
-  const inputClass = "border border-border rounded-xl px-4 py-2 w-full bg-muted text-foreground shadow-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all duration-200 min-w-0";
+  const inputClass = "border border-border rounded-xl px-4 py-2 w-full bg-muted text-foreground shadow-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all duration-200 min-w-0 [color-scheme:dark]";
 
   return (
     <div className="w-full max-w-2xl mx-auto mb-8">

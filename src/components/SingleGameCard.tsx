@@ -1,9 +1,11 @@
 import React from 'react';
 import { GameData } from '../types/gameData';
 import CornerLogos from './CornerLogos';
+import { Logo } from '../hooks/useLogos';
 
 interface SingleGameCardProps {
   game: GameData;
+  logos: Logo[];
 }
 
 const isValidUrl = (url: string): boolean => {
@@ -22,11 +24,11 @@ const getValidImageUrl = (url: string | undefined): string => {
   return url;
 };
 
-export const SingleGameCard: React.FC<SingleGameCardProps> = ({ game }) => {
+export const SingleGameCard: React.FC<SingleGameCardProps> = ({ game, logos }) => {
   return (
     <div className="game-card w-full bg-white rounded-lg shadow-lg overflow-hidden mx-auto" style={{ maxWidth: '1080px', aspectRatio: '1/1' }}>
       <div className="w-full h-full p-[5%] flex flex-col justify-between">
-        <CornerLogos className="h-[10%]" />
+        <CornerLogos className="h-[10%]" logos={logos} position="top" />
 
         <div className="flex-1 flex flex-col justify-center items-center gap-8">
           <div className="text-center space-y-2">
@@ -82,7 +84,7 @@ export const SingleGameCard: React.FC<SingleGameCardProps> = ({ game }) => {
           </div>
         </div>
 
-        <CornerLogos className="h-[10%]" />
+        <CornerLogos className="h-[10%]" logos={logos} position="bottom" />
       </div>
     </div>
   );
