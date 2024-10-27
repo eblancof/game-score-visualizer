@@ -1,9 +1,11 @@
 import React from 'react';
 import { GameData } from '../types/gameData';
 import CornerLogos from './CornerLogos';
+import { Logo } from '../hooks/useLogos';
 
 interface GameCardProps {
   games: GameData[];
+  logos: Logo[];
 }
 
 const isValidUrl = (url: string): boolean => {
@@ -22,14 +24,14 @@ const getValidImageUrl = (url: string | undefined): string => {
   return url;
 };
 
-export const GameCard: React.FC<GameCardProps> = ({ games }) => {
+export const GameCard: React.FC<GameCardProps> = ({ games, logos }) => {
   const maxGames = Math.min(games.length, 6);
   const gamesList = games.slice(0, maxGames);
 
   return (
-    <div className="game-card w-full h-full bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="game-card w-full h-full bg-[#ffffff] rounded-lg shadow-lg overflow-hidden">
       <div className="w-full h-full p-[3%] flex flex-col justify-between" style={{ maxWidth: '1080px', margin: '0 auto' }}>
-        <CornerLogos className="h-[10%]" />
+        <CornerLogos className="h-[10%]" logos={logos} />
 
         <div className="flex-1 flex flex-col justify-around py-[2%]">
           {gamesList.map((game) => (
@@ -101,7 +103,7 @@ export const GameCard: React.FC<GameCardProps> = ({ games }) => {
           ))}
         </div>
 
-        <CornerLogos className="h-[10%]" />
+        <CornerLogos className="h-[10%]" logos={logos} />
       </div>
     </div>
   );

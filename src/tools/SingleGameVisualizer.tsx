@@ -31,28 +31,22 @@ const SingleGameVisualizer: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-500 to-white p-4">
-      <div className="max-w-[1200px] mx-auto">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-8 text-center">
-          Single Game Visualizer
-        </h1>
+    <div>
+      <SingleGamePicker
+        onDateSelect={handleDateSelect}
+        games={games}
+        selectedGame={selectedGame}
+        onGameSelect={setSelectedGame}
+        loading={loading}
+        error={error}
+      />
 
-        <SingleGamePicker
-          onDateSelect={handleDateSelect}
-          games={games}
-          selectedGame={selectedGame}
-          onGameSelect={setSelectedGame}
-          loading={loading}
-          error={error}
-        />
-
-        {selectedGame && (
-          <div className="mt-8 space-y-6">
-            <SingleGameExport />
-            <SingleGameCard game={selectedGame} />
-          </div>
-        )}
-      </div>
+      {selectedGame && (
+        <div className="mt-8 space-y-6">
+          <SingleGameExport />
+          <SingleGameCard game={selectedGame} />
+        </div>
+      )}
     </div>
   );
 };

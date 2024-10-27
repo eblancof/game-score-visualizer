@@ -4,9 +4,11 @@ import { Button } from "./ui/button";
 import { GameData } from '../types/gameData';
 import { GameCard } from './GameCard';
 import { downloadCard } from '../utils/downloadCards';
+import { Logo } from '../hooks/useLogos';
 
 interface GameSliderProps {
   cards: GameData[][];
+  logos: Logo[];
 }
 
 const ExportOptions: React.FC = () => {
@@ -68,7 +70,7 @@ const ExportOptions: React.FC = () => {
   );
 };
 
-const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOptions } = ({ cards }) => {
+const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOptions } = ({ cards, logos }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentCardRef = useRef<HTMLDivElement>(null);
 
@@ -88,7 +90,7 @@ const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOpti
     <div className="space-y-4">
       <div className="relative w-full max-w-[1080px] mx-auto">
         <div className="relative w-full" style={{ paddingBottom: '100%' }}>
-          <div className="absolute inset-0 overflow-hidden ">
+          <div className="absolute inset-0 overflow-hidden">
             <div
               className="h-full flex transition-transform duration-300 ease-in-out"
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -96,7 +98,7 @@ const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOpti
             >
               {cards.map((cardGames, index) => (
                 <div key={index} className="w-full h-full flex-shrink-0">
-                  <GameCard games={cardGames} />
+                  <GameCard games={cardGames} logos={logos} />
                 </div>
               ))}
             </div>

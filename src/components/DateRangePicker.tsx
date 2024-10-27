@@ -33,13 +33,12 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ onDateChange }) => {
     }
   };
 
-  const inputClass = "border border-gray-200 rounded-xl px-4 py-2 w-full bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 min-w-0";
+  const inputClass = "border border-border rounded-xl px-4 py-2 w-full bg-muted text-foreground shadow-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all duration-200 min-w-0";
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-4">
-      <form onSubmit={handleSubmit} className={`bg-white/50 backdrop-blur-sm rounded-2xl shadow-lg transition-all duration-200 ${dateType === 'range' ? 'p-6 sm:p-8' : 'p-6'}`}>
+    <div className="w-full max-w-2xl mx-auto mb-8">
+      <form onSubmit={handleSubmit} className="bg-card rounded-xl shadow-md p-6 border border-border/50">
         <div className="grid grid-cols-1 lg:grid-cols-[auto,1fr] gap-6">
-          {/* Radio Button Group */}
           <div className="flex items-center gap-4 sm:gap-6">
             <label className="inline-flex items-center group cursor-pointer">
               <input
@@ -49,10 +48,10 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ onDateChange }) => {
                 onChange={(e) => handleDateTypeChange(e.target.value as 'single' | 'range')}
                 className="sr-only peer"
               />
-              <div className="w-5 h-5 border-2 border-gray-300 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all duration-200 ease-in-out flex items-center justify-center">
-                <div className="w-2.5 h-2.5 bg-white rounded-full scale-0 peer-checked:scale-100 transition-transform duration-200"></div>
+              <div className="w-5 h-5 border-2 border-border peer-checked:border-primary peer-checked:bg-primary transition-all duration-200 ease-in-out flex items-center justify-center rounded-full">
+                <div className="w-2.5 h-2.5 bg-primary-foreground rounded-full scale-0 peer-checked:scale-100 transition-transform duration-200"></div>
               </div>
-              <span className="ml-2 text-gray-700 group-hover:text-gray-900 transition-colors whitespace-nowrap">Single Day</span>
+              <span className="ml-2 text-foreground group-hover:text-primary transition-colors whitespace-nowrap">Single Day</span>
             </label>
             <label className="inline-flex items-center group cursor-pointer">
               <input
@@ -62,14 +61,13 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ onDateChange }) => {
                 onChange={(e) => handleDateTypeChange(e.target.value as 'single' | 'range')}
                 className="sr-only peer"
               />
-              <div className="w-5 h-5 border-2 border-gray-300 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all duration-200 ease-in-out flex items-center justify-center">
-                <div className="w-2.5 h-2.5 bg-white rounded-full scale-0 peer-checked:scale-100 transition-transform duration-200"></div>
+              <div className="w-5 h-5 border-2 border-border peer-checked:border-primary peer-checked:bg-primary transition-all duration-200 ease-in-out flex items-center justify-center rounded-full">
+                <div className="w-2.5 h-2.5 bg-primary-foreground rounded-full scale-0 peer-checked:scale-100 transition-transform duration-200"></div>
               </div>
-              <span className="ml-2 text-gray-700 group-hover:text-gray-900 transition-colors whitespace-nowrap">Date Range</span>
+              <span className="ml-2 text-foreground group-hover:text-primary transition-colors whitespace-nowrap">Date Range</span>
             </label>
           </div>
 
-          {/* Date Inputs and Button */}
           <div className={`grid ${dateType === 'single' ? 'grid-cols-1 sm:grid-cols-[1fr,auto]' : 'grid-cols-1 lg:grid-cols-[2fr,auto]'} gap-4`}>
             <div className={`grid ${dateType === 'single' ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-[1fr,auto,1fr]'} gap-4 items-center`}>
               {dateType === 'single' ? (
@@ -89,7 +87,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ onDateChange }) => {
                     className={inputClass}
                     required
                   />
-                  <span className="text-gray-500 hidden sm:block justify-self-center">to</span>
+                  <span className="text-muted-foreground hidden sm:block justify-self-center">to</span>
                   <input
                     type="date"
                     value={endDate}
@@ -102,7 +100,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ onDateChange }) => {
             </div>
             <button
               type="submit"
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-2 px-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 w-full sm:w-auto focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 outline-none self-end justify-self-end"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium py-2 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 w-full sm:w-auto focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background outline-none self-end justify-self-end"
             >
               Fetch data
             </button>

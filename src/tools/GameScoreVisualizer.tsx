@@ -6,6 +6,8 @@ import { generateCards } from '../utils/cardGenerator';
 import GameSlider from '../components/GameSlider';
 import GameList from '../components/GameList';
 import ViewToggle from '../components/ViewToggle';
+import LogoManager from '../components/LogoManager';
+import { useLogos } from '../hooks/useLogos';
 
 const GameScoreVisualizer: React.FC = () => {
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -15,6 +17,7 @@ const GameScoreVisualizer: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<'slider' | 'list'>('slider');
+  const { logos, updateLogo } = useLogos();
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -42,27 +45,24 @@ const GameScoreVisualizer: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-red-500 to-white p-4">
-      <div className="max-w-[1200px] mx-auto">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-8 text-center">
-          Basketball Results Instagram Post Generator
-        </h1>
-        <DateRangePicker onDateChange={handleDateChange} />
-        
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-6">
-          <ViewToggle view={view} onViewChange={setView} />
-          {view === 'slider' && <GameSlider.ExportOptions />}
-        </div>
-        
-        {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
-        {loading ? (
-          <p className="text-white text-center">Loading...</p>
-        ) : view === 'slider' ? (
-          <GameSlider cards={cards} />
-        ) : (
-          <GameList cards={cards} />
-        )}
+    <div>
+      <DateRangePicker onDateChange={handleDateChange} />
+      
+      <LogoManager logos={logos} onLogoUpdate={updateLogo} />
+      
+      <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-6">
+        <ViewToggle view={view} onViewChange={setView} />
+        {view === 'slider' && <GameSlider.ExportOptions />}
       </div>
+      
+      {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
+      {loading ? (
+        <p className="text-muted-foreground text-center">Loading...</p>
+      ) : view === 'slider' ? (
+        <GameSlider cards={cards} logos={logos} />
+      ) : (
+        <GameList cards={cards} />
+      )}
     </div>
   );
 };

@@ -29,24 +29,34 @@ const tools: Tool[] = [
 const App: React.FC = () => {
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
 
-  const handleBack = () => setSelectedTool(null);
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border/50 bg-card/50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-8">
+          <h1 
+            className="text-xl font-semibold cursor-pointer hover:text-primary transition-colors"
+            onClick={() => setSelectedTool(null)}
+          >
+            Basketball Tools
+          </h1>
+          {selectedTool && (
+            <>
+              <span className="text-muted-foreground">/</span>
+              <span className="text-accent-foreground">{selectedTool.name}</span>
+            </>
+          )}
+        </div>
+      </header>
 
-  if (selectedTool) {
-    const ToolComponent = selectedTool.component;
-    return (
-      <div>
-        <button 
-          onClick={handleBack}
-          className="fixed top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg hover:bg-white transition-colors z-50"
-        >
-          ← Back to Tools
-        </button>
-        <ToolComponent />
-      </div>
-    );
-  }
-
-  return <ToolSelector tools={tools} onSelectTool={setSelectedTool} />;
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {selectedTool ? (
+          <selectedTool.component />
+        ) : (
+          <ToolSelector tools={tools} onSelectTool={setSelectedTool} />
+        )}
+      </main>
+    </div>
+  );
 };
 
 export default App;
