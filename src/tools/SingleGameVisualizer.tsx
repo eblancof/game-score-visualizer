@@ -5,6 +5,8 @@ import SingleGameCard from '../components/SingleGameCard';
 import SingleGamePicker from '../components/SingleGamePicker';
 import SingleGameExport from '../components/SingleGameExport';
 import { useLogos } from '../hooks/useLogos';
+import { Button } from '../components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 const SingleGameVisualizer: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -32,20 +34,34 @@ const SingleGameVisualizer: React.FC = () => {
     setSelectedDate(date);
   };
 
+  const handleBackToList = () => {
+    setSelectedGame(null);
+  };
+
   return (
     <div>
-      <SingleGamePicker
-        onDateSelect={handleDateSelect}
-        games={games}
-        selectedGame={selectedGame}
-        onGameSelect={setSelectedGame}
-        loading={loading}
-        error={error}
-      />
-
-      {selectedGame && (
-        <div className="mt-8 space-y-6">
-          <SingleGameExport />
+      {!selectedGame ? (
+        <SingleGamePicker
+          onDateSelect={handleDateSelect}
+          games={games}
+          selectedGame={selectedGame}
+          onGameSelect={setSelectedGame}
+          loading={loading}
+          error={error}
+        />
+      ) : (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 max-w-2xl mx-auto">
+            <Button
+              variant="outline"
+              onClick={handleBackToList}
+              className="w-full sm:w-auto"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to game list
+            </Button>
+            <SingleGameExport />
+          </div>
           <SingleGameCard game={selectedGame} logos={logos} />
         </div>
       )}

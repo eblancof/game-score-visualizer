@@ -14,11 +14,12 @@ const SingleGameExport: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-wrap justify-center items-center gap-4">
+    <div className="flex items-center gap-2">
       <div className="flex gap-2">
         <Button
           variant={resolution === 1080 ? "default" : "outline"}
           onClick={() => setResolution(1080)}
+          size="sm"
           className="whitespace-nowrap"
         >
           1080x1080
@@ -26,6 +27,7 @@ const SingleGameExport: React.FC = () => {
         <Button
           variant={resolution === 2056 ? "default" : "outline"}
           onClick={() => setResolution(2056)}
+          size="sm"
           className="whitespace-nowrap"
         >
           2056x2056
@@ -35,10 +37,11 @@ const SingleGameExport: React.FC = () => {
       <Button
         variant="outline"
         onClick={handleExport}
+        size="sm"
         className="flex items-center gap-2"
       >
         <Download className="w-4 h-4" />
-        Download Card
+        Download
       </Button>
     </div>
   );
