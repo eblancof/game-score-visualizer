@@ -31,7 +31,7 @@ export const GameCard: React.FC<GameCardProps> = ({ games, logos }) => {
   return (
     <div className="game-card w-full h-full bg-[#ffffff] rounded-lg shadow-lg overflow-hidden">
       <div className="w-full h-full p-[3%] flex flex-col justify-between" style={{ maxWidth: '1080px', margin: '0 auto' }}>
-        <CornerLogos className="h-[10%]" logos={logos} position="top" />
+        <CornerLogos className="h-[10%]" logos={logos} section="top" />
 
         <div className="flex-1 flex flex-col justify-around py-[2%]">
           {gamesList.map((game) => (
@@ -103,7 +103,7 @@ export const GameCard: React.FC<GameCardProps> = ({ games, logos }) => {
           ))}
         </div>
 
-        <CornerLogos className="h-[10%]" logos={logos} position="bottom" />
+        <CornerLogos className="h-[10%]" logos={logos} section="bottom" />
       </div>
     </div>
   );

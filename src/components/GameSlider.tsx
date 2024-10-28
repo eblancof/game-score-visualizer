@@ -106,18 +106,18 @@ const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOpti
         </div>
         
         <Button
-          variant="outline"
+          variant="secondary"
           size="icon"
-          className="absolute left-[2%] top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white w-[8%] aspect-square"
+          className="absolute left-[2%] top-1/2 transform -translate-y-1/2 w-[8%] aspect-square"
           onClick={goToPrevious}
           aria-label="Previous card"
         >
           <ChevronLeft className="w-[50%] h-[50%]" />
         </Button>
         <Button
-          variant="outline"
+          variant="secondary"
           size="icon"
-          className="absolute right-[2%] top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white w-[8%] aspect-square"
+          className="absolute right-[2%] top-1/2 transform -translate-y-1/2 w-[8%] aspect-square"
           onClick={goToNext}
           aria-label="Next card"
         >
@@ -129,7 +129,7 @@ const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOpti
             <button
               key={index}
               className={`w-[1vw] aspect-square rounded-full ${
-                index === currentIndex ? 'bg-primary' : 'bg-gray-300'
+                index === currentIndex ? 'bg-primary' : 'bg-muted'
               }`}
               onClick={() => setCurrentIndex(index)}
               aria-label={`Go to card ${index + 1}`}
