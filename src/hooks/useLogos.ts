@@ -16,12 +16,21 @@ const DEFAULT_POSITIONS = {
 
 export function useLogos() {
   const [logos, setLogos] = useState<Logo[]>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Error loading logos:', error);
+      return [];
+    }
   });
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(logos));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(logos));
+    } catch (error) {
+      console.error('Error saving logos:', error);
+    }
   }, [logos]);
 
   const addLogo = (section: 'top' | 'bottom') => {

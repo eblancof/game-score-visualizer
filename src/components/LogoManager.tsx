@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from './ui/button';
 import { useLogos } from '../hooks/useLogos';
 import { Plus, Trash2, Move } from 'lucide-react';
@@ -9,9 +9,26 @@ const PreviewCard: React.FC<{
   logos: Logo[];
   onLogoPositionUpdate: (id: string, x: number, y: number) => void;
   isEditing: boolean;
-}> = ({ logos, onLogoPositionUpdate, isEditing }) => {
+  selectedLogo: string | null;
+  onLogoSelect: (id: string) => void;
+}> = ({ logos, onLogoPositionUpdate, isEditing, selectedLogo, onLogoSelect }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 aspect-square">
+    <div className="bg-white rounded-xl shadow-md p-6 aspect-square" ref={containerRef}>
       <div className="w-full h-full flex flex-col justify-between">
         <CornerLogos
           logos={logos}
@@ -19,9 +36,14 @@ const PreviewCard: React.FC<{
           className="h-[15%]"
           onPositionUpdate={onLogoPositionUpdate}
           isEditing={isEditing}
+          onLogoSelect={onLogoSelect}
+          selectedLogo={selectedLogo}
+          containerWidth={containerWidth}
         />
 
-        <div className="flex-1 mx-8 my-4 bg-gray-100 rounded-lg"></div>
+        <div className="flex-1 mx-8 my-4 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500">
+          Game Information Preview Area
+        </div>
 
         <CornerLogos
           logos={logos}
@@ -29,6 +51,9 @@ const PreviewCard: React.FC<{
           className="h-[15%]"
           onPositionUpdate={onLogoPositionUpdate}
           isEditing={isEditing}
+          onLogoSelect={onLogoSelect}
+          selectedLogo={selectedLogo}
+          containerWidth={containerWidth}
         />
       </div>
     </div>
@@ -39,6 +64,7 @@ const LogoManager: React.FC = () => {
   const { logos, addLogo, updateLogo, removeLogo, updateLogoPosition } = useLogos();
   const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (file: File) => {
     if (!selectedLogo) return;
@@ -46,7 +72,14 @@ const LogoManager: React.FC = () => {
     try {
       const reader = new FileReader();
       reader.onloadend = () => {
-        updateLogo(selectedLogo, { url: reader.result as string });
+        if (typeof reader.result === 'string') {
+          // Create a new image to ensure it's loaded before updating
+          const img = new Image();
+          img.onload = () => {
+            updateLogo(selectedLogo, { url: reader.result as string });
+          };
+          img.src = reader.result;
+        }
       };
       reader.readAsDataURL(file);
     } catch (error) {
@@ -59,6 +92,12 @@ const LogoManager: React.FC = () => {
     setSelectedLogo(newLogoId);
   };
 
+  const handleLogoSelect = (id: string) => {
+    if (!isEditing) {
+      setSelectedLogo(id);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="bg-card rounded-xl shadow-md p-6 mb-8 border border-border/50">
@@ -67,7 +106,12 @@ const LogoManager: React.FC = () => {
           <Button
             variant={isEditing ? "default" : "outline"}
             size="sm"
-            onClick={() => setIsEditing(!isEditing)}
+            onClick={() => {
+              setIsEditing(!isEditing);
+              if (!isEditing) {
+                setSelectedLogo(null);
+              }
+            }}
             className="flex items-center gap-2"
           >
             <Move className="w-4 h-4" />
@@ -81,6 +125,8 @@ const LogoManager: React.FC = () => {
               logos={logos}
               onLogoPositionUpdate={updateLogoPosition}
               isEditing={isEditing}
+              selectedLogo={selectedLogo}
+              onLogoSelect={handleLogoSelect}
             />
           </div>
 
@@ -122,12 +168,13 @@ const LogoManager: React.FC = () => {
                     }}
                     className="hidden"
                     id="logo-upload"
+                    ref={fileInputRef}
                   />
                   <Button
                     variant="outline"
                     size="sm"
                     className="w-full"
-                    onClick={() => document.getElementById('logo-upload')?.click()}
+                    onClick={() => fileInputRef.current?.click()}
                   >
                     {logos.find(l => l.id === selectedLogo)?.url 
                       ? 'Change Image'

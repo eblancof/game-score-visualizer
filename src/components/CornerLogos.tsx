@@ -9,6 +9,9 @@ interface CornerLogosProps {
   section: 'top' | 'bottom';
   onPositionUpdate?: (id: string, x: number, y: number) => void;
   isEditing?: boolean;
+  onLogoSelect?: (id: string) => void;
+  selectedLogo?: string | null;
+  containerWidth?: number;
 }
 
 const CornerLogos: React.FC<CornerLogosProps> = ({
@@ -16,9 +19,13 @@ const CornerLogos: React.FC<CornerLogosProps> = ({
   logos,
   section,
   onPositionUpdate,
-  isEditing = false
+  isEditing = false,
+  onLogoSelect,
+  selectedLogo,
+  containerWidth = 1080
 }) => {
   const sectionLogos = logos.filter(logo => logo.section === section);
+  const scaleFactor = containerWidth / 1080; // Base width for scaling
 
   return (
     <div className={`relative w-full ${className}`}>
@@ -28,6 +35,9 @@ const CornerLogos: React.FC<CornerLogosProps> = ({
           logo={logo}
           onPositionUpdate={onPositionUpdate}
           isEditing={isEditing}
+          onLogoSelect={onLogoSelect}
+          isSelected={selectedLogo === logo.id}
+          scaleFactor={scaleFactor}
         />
       ))}
     </div>
@@ -38,14 +48,33 @@ interface DraggableLogoProps {
   logo: Logo;
   onPositionUpdate?: (id: string, x: number, y: number) => void;
   isEditing: boolean;
+  onLogoSelect?: (id: string) => void;
+  isSelected: boolean;
+  scaleFactor: number;
 }
 
-const DraggableLogo: React.FC<DraggableLogoProps> = ({ logo, onPositionUpdate, isEditing }) => {
+const DraggableLogo: React.FC<DraggableLogoProps> = ({ 
+  logo, 
+  onPositionUpdate, 
+  isEditing,
+  onLogoSelect,
+  isSelected,
+  scaleFactor
+}) => {
   const [{ x, y }, api] = useSpring(() => ({
-    x: logo.position?.x || 0,
-    y: logo.position?.y || 0,
+    x: (logo.position?.x || 0) * scaleFactor,
+    y: (logo.position?.y || 0) * scaleFactor,
     config: { tension: 300, friction: 30 }
   }));
+
+  // Update position when scaleFactor changes
+  React.useEffect(() => {
+    api.start({
+      x: (logo.position?.x || 0) * scaleFactor,
+      y: (logo.position?.y || 0) * scaleFactor,
+      immediate: true
+    });
+  }, [scaleFactor, logo.position, api]);
 
   const bind = useDrag(({ offset: [ox, oy], first, last }) => {
     if (!isEditing) return;
@@ -53,17 +82,30 @@ const DraggableLogo: React.FC<DraggableLogoProps> = ({ logo, onPositionUpdate, i
     api.start({ x: ox, y: oy, immediate: first });
     
     if (last && onPositionUpdate) {
-      onPositionUpdate(logo.id, ox, oy);
+      // Store the unscaled position
+      onPositionUpdate(logo.id, ox / scaleFactor, oy / scaleFactor);
     }
   }, {
     from: () => [x.get(), y.get()],
-    bounds: { left: -50, right: 50, top: -20, bottom: 20 },
+    bounds: { 
+      left: -200 * scaleFactor, 
+      right: 200 * scaleFactor, 
+      top: -20 * scaleFactor, 
+      bottom: 20 * scaleFactor 
+    },
     enabled: isEditing
   });
+
+  const handleClick = () => {
+    if (!isEditing && onLogoSelect) {
+      onLogoSelect(logo.id);
+    }
+  };
 
   return (
     <animated.div
       {...(isEditing ? bind() : {})}
+      onClick={handleClick}
       style={{
         x,
         y,
@@ -71,8 +113,10 @@ const DraggableLogo: React.FC<DraggableLogoProps> = ({ logo, onPositionUpdate, i
         left: '50%',
         top: '50%',
         transform: 'translate(-50%, -50%)',
-        cursor: isEditing ? 'grab' : 'default',
-        touchAction: 'none'
+        cursor: isEditing ? 'grab' : 'pointer',
+        touchAction: 'none',
+        outline: isSelected ? '2px solid hsl(var(--primary))' : 'none',
+        borderRadius: '0.5rem'
       }}
       className="w-[15%] aspect-square"
     >
