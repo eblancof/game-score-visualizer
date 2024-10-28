@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import ToolSelector from './components/ToolSelector';
 import GameScoreVisualizer from './tools/GameScoreVisualizer';
 import SingleGameVisualizer from './tools/SingleGameVisualizer';
@@ -89,6 +89,7 @@ const App: React.FC = () => {
               />
             ))}
             <Route path="/settings" element={<LogoManager />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </div>

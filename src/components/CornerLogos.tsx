@@ -8,9 +8,8 @@ interface CornerLogosProps {
   logos: Logo[];
   section: 'top' | 'bottom';
   onPositionUpdate?: (id: string, x: number, y: number) => void;
-  isEditing?: boolean;
-  onLogoSelect?: (id: string) => void;
   selectedLogo?: string | null;
+  onLogoSelect?: (id: string) => void;
   containerWidth?: number;
 }
 
@@ -19,13 +18,17 @@ const CornerLogos: React.FC<CornerLogosProps> = ({
   logos,
   section,
   onPositionUpdate,
-  isEditing = false,
-  onLogoSelect,
   selectedLogo,
+  onLogoSelect,
   containerWidth = 1080
 }) => {
   const sectionLogos = logos.filter(logo => logo.section === section);
   const scaleFactor = containerWidth / 1080;
+
+  // Define section-specific constraints
+  const yConstraints = section === 'top' 
+    ? { min: -20 * scaleFactor, max: 60 * scaleFactor }
+    : { min: -60 * scaleFactor, max: 20 * scaleFactor };
 
   return (
     <div className={`relative w-full ${className}`}>
@@ -34,10 +37,10 @@ const CornerLogos: React.FC<CornerLogosProps> = ({
           key={logo.id}
           logo={logo}
           onPositionUpdate={onPositionUpdate}
-          isEditing={isEditing}
           onLogoSelect={onLogoSelect}
           isSelected={selectedLogo === logo.id}
           scaleFactor={scaleFactor}
+          yConstraints={yConstraints}
         />
       ))}
     </div>
@@ -47,19 +50,19 @@ const CornerLogos: React.FC<CornerLogosProps> = ({
 interface DraggableLogoProps {
   logo: Logo;
   onPositionUpdate?: (id: string, x: number, y: number) => void;
-  isEditing: boolean;
   onLogoSelect?: (id: string) => void;
   isSelected: boolean;
   scaleFactor: number;
+  yConstraints: { min: number; max: number };
 }
 
 const DraggableLogo: React.FC<DraggableLogoProps> = ({ 
   logo, 
-  onPositionUpdate, 
-  isEditing,
+  onPositionUpdate,
   onLogoSelect,
   isSelected,
-  scaleFactor
+  scaleFactor,
+  yConstraints
 }) => {
   const [{ x, y }, api] = useSpring(() => ({
     x: (logo.position?.x || 0) * scaleFactor,
@@ -75,35 +78,33 @@ const DraggableLogo: React.FC<DraggableLogoProps> = ({
     });
   }, [scaleFactor, logo.position, api]);
 
-  const bind = useDrag(({ offset: [ox, oy], first, last }) => {
-    if (!isEditing) return;
+  const bind = useDrag(({ offset: [ox, oy], last }) => {
+    const constrainedX = Math.max(-400 * scaleFactor, Math.min(400 * scaleFactor, ox));
+    const constrainedY = Math.max(yConstraints.min, Math.min(yConstraints.max, oy));
     
-    api.start({ x: ox, y: oy, immediate: first });
+    api.start({ 
+      x: constrainedX, 
+      y: constrainedY, 
+      immediate: true 
+    });
     
     if (last && onPositionUpdate) {
-      onPositionUpdate(logo.id, ox / scaleFactor, oy / scaleFactor);
+      onPositionUpdate(logo.id, constrainedX / scaleFactor, constrainedY / scaleFactor);
     }
   }, {
     from: () => [x.get(), y.get()],
-    bounds: { 
-      left: -540 * scaleFactor, 
-      right: 540 * scaleFactor, 
-      top: -540 * scaleFactor, 
-      bottom: 540 * scaleFactor 
-    },
-    enabled: isEditing
-  });
-
-  const handleClick = () => {
-    if (!isEditing && onLogoSelect) {
-      onLogoSelect(logo.id);
+    bounds: {
+      left: -400 * scaleFactor,
+      right: 400 * scaleFactor,
+      top: yConstraints.min,
+      bottom: yConstraints.max
     }
-  };
+  });
 
   return (
     <animated.div
-      {...(isEditing ? bind() : {})}
-      onClick={handleClick}
+      {...bind()}
+      onClick={() => onLogoSelect?.(logo.id)}
       style={{
         x,
         y,
@@ -111,12 +112,11 @@ const DraggableLogo: React.FC<DraggableLogoProps> = ({
         left: '50%',
         top: '50%',
         transform: 'translate(-50%, -50%)',
-        cursor: isEditing ? 'grab' : 'pointer',
+        cursor: 'grab',
         touchAction: 'none',
-        outline: isSelected ? '2px solid hsl(var(--primary))' : 'none',
         borderRadius: '0.5rem'
       }}
-      className="w-[15%] aspect-square"
+      className={`w-[15%] aspect-square ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-white' : ''}`}
     >
       {logo.url ? (
         <img

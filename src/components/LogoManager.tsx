@@ -1,17 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from './ui/button';
 import { useLogos } from '../hooks/useLogos';
-import { Plus, Trash2, Move } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { Logo } from '../hooks/useLogos';
 import CornerLogos from './CornerLogos';
 
 const PreviewCard: React.FC<{
   logos: Logo[];
   onLogoPositionUpdate: (id: string, x: number, y: number) => void;
-  isEditing: boolean;
   selectedLogo: string | null;
   onLogoSelect: (id: string) => void;
-}> = ({ logos, onLogoPositionUpdate, isEditing, selectedLogo, onLogoSelect }) => {
+}> = ({ logos, onLogoPositionUpdate, selectedLogo, onLogoSelect }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -35,9 +34,8 @@ const PreviewCard: React.FC<{
           section="top"
           className="h-[15%]"
           onPositionUpdate={onLogoPositionUpdate}
-          isEditing={isEditing}
-          onLogoSelect={onLogoSelect}
           selectedLogo={selectedLogo}
+          onLogoSelect={onLogoSelect}
           containerWidth={containerWidth}
         />
 
@@ -50,9 +48,8 @@ const PreviewCard: React.FC<{
           section="bottom"
           className="h-[15%]"
           onPositionUpdate={onLogoPositionUpdate}
-          isEditing={isEditing}
-          onLogoSelect={onLogoSelect}
           selectedLogo={selectedLogo}
+          onLogoSelect={onLogoSelect}
           containerWidth={containerWidth}
         />
       </div>
@@ -63,7 +60,6 @@ const PreviewCard: React.FC<{
 const LogoManager: React.FC = () => {
   const { logos, addLogo, updateLogo, removeLogo, updateLogoPosition } = useLogos();
   const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (file: File) => {
@@ -89,13 +85,10 @@ const LogoManager: React.FC = () => {
   const handleAddLogo = (section: 'top' | 'bottom') => {
     const newLogoId = addLogo(section);
     setSelectedLogo(newLogoId);
-    setIsEditing(false);
   };
 
   const handleLogoSelect = (id: string) => {
-    if (!isEditing) {
-      setSelectedLogo(id);
-    }
+    setSelectedLogo(id);
   };
 
   return (
@@ -103,20 +96,6 @@ const LogoManager: React.FC = () => {
       <div className="bg-card rounded-xl shadow-md p-6 mb-8 border border-border/50">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-semibold text-foreground">Logo Settings</h2>
-          <Button
-            variant={isEditing ? "default" : "outline"}
-            size="sm"
-            onClick={() => {
-              setIsEditing(!isEditing);
-              if (!isEditing) {
-                setSelectedLogo(null);
-              }
-            }}
-            className="flex items-center gap-2"
-          >
-            <Move className="w-4 h-4" />
-            {isEditing ? "Save Positions" : "Edit Positions"}
-          </Button>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-[1fr,auto] gap-8 items-start">
@@ -124,7 +103,6 @@ const LogoManager: React.FC = () => {
             <PreviewCard 
               logos={logos}
               onLogoPositionUpdate={updateLogoPosition}
-              isEditing={isEditing}
               selectedLogo={selectedLogo}
               onLogoSelect={handleLogoSelect}
             />
