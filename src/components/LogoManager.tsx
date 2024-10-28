@@ -73,7 +73,6 @@ const LogoManager: React.FC = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === 'string') {
-          // Create a new image to ensure it's loaded before updating
           const img = new Image();
           img.onload = () => {
             updateLogo(selectedLogo, { url: reader.result as string });
@@ -90,6 +89,7 @@ const LogoManager: React.FC = () => {
   const handleAddLogo = (section: 'top' | 'bottom') => {
     const newLogoId = addLogo(section);
     setSelectedLogo(newLogoId);
+    setIsEditing(false);
   };
 
   const handleLogoSelect = (id: string) => {

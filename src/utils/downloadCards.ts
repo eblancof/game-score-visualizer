@@ -59,13 +59,21 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       .game-card .text-gray-500 {
         font-size: 13.65px !important;
       }
+      .game-card img {
+        width: auto !important;
+        height: auto !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: contain !important;
+        image-rendering: -webkit-optimize-contrast !important;
+        image-rendering: crisp-edges !important;
+      }
       .game-card img.rounded-full {
         width: 57px !important;
         height: 57px !important;
         filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15)) !important;
         border: 1.5px solid rgba(255,255,255,0.8) !important;
-        image-rendering: -webkit-optimize-contrast !important;
-        image-rendering: crisp-edges !important;
+        object-fit: cover !important;
       }
       .game-card .w-[15%] {
         width: 162px !important;
@@ -113,38 +121,44 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
     wrapper.appendChild(clonedCard);
     document.body.appendChild(wrapper);
 
-    // Wait for all images to load with high quality
+    // Fix logo positions before capture
+   
+
+    // Wait for all images to load
     const images = clonedCard.getElementsByTagName('img');
     await Promise.all(Array.from(images).map(img => {
       if (img.complete) return Promise.resolve();
-      // Force image reload with cache disabled for better quality
-      img.src = img.src + '?quality=100';
       return new Promise(resolve => {
         img.onload = resolve;
         img.onerror = resolve;
       });
     }));
 
-    // Create initial canvas with higher scale
     const canvas = await html2canvas(clonedCard, {
-      scale: 4, // Increased scale for better quality
+      scale: 4,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
       width: 1080,
       height: 1080,
       logging: false,
-      imageTimeout: 0, // No timeout for image loading
+      imageTimeout: 0,
+      onclone: (document, element) => {
+        const images = element.getElementsByTagName('img');
+        Array.from(images).forEach(img => {
+          img.style.maxWidth = '100%';
+          img.style.maxHeight = '100%';
+          img.style.objectFit = 'contain';
+        });
+      }
     });
 
-    // Create final canvas with desired resolution
     const finalCanvas = document.createElement('canvas');
     finalCanvas.width = resolution;
     finalCanvas.height = resolution;
     const ctx = finalCanvas.getContext('2d', { alpha: false });
     
     if (ctx) {
-      // Enable high-quality image scaling
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
       
@@ -160,18 +174,16 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
 
     document.body.removeChild(wrapper);
 
-    // Create download link with higher quality PNG
     const link = document.createElement('a');
     const filename = index 
       ? `basketball-results-${index}-${resolution}x${resolution}.png`
       : `basketball-results-${resolution}x${resolution}.png`;
     
-    // Use higher quality PNG encoding
     const blob = await new Promise<Blob>(resolve => {
       finalCanvas.toBlob(
         blob => resolve(blob!),
         'image/png',
-        1.0 // Maximum quality
+        1.0
       );
     });
     

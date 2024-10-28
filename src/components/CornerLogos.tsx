@@ -25,7 +25,7 @@ const CornerLogos: React.FC<CornerLogosProps> = ({
   containerWidth = 1080
 }) => {
   const sectionLogos = logos.filter(logo => logo.section === section);
-  const scaleFactor = containerWidth / 1080; // Base width for scaling
+  const scaleFactor = containerWidth / 1080;
 
   return (
     <div className={`relative w-full ${className}`}>
@@ -67,7 +67,6 @@ const DraggableLogo: React.FC<DraggableLogoProps> = ({
     config: { tension: 300, friction: 30 }
   }));
 
-  // Update position when scaleFactor changes
   React.useEffect(() => {
     api.start({
       x: (logo.position?.x || 0) * scaleFactor,
@@ -82,16 +81,15 @@ const DraggableLogo: React.FC<DraggableLogoProps> = ({
     api.start({ x: ox, y: oy, immediate: first });
     
     if (last && onPositionUpdate) {
-      // Store the unscaled position
       onPositionUpdate(logo.id, ox / scaleFactor, oy / scaleFactor);
     }
   }, {
     from: () => [x.get(), y.get()],
     bounds: { 
-      left: -200 * scaleFactor, 
-      right: 200 * scaleFactor, 
-      top: -20 * scaleFactor, 
-      bottom: 20 * scaleFactor 
+      left: -540 * scaleFactor, 
+      right: 540 * scaleFactor, 
+      top: -540 * scaleFactor, 
+      bottom: 540 * scaleFactor 
     },
     enabled: isEditing
   });
