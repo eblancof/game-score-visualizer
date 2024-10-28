@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ImagePlus } from 'lucide-react';
+import { ImagePlus, Image as ImageIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Container } from '../ui/container';
 import { Tool } from '../../types/tool';
@@ -32,12 +32,25 @@ export const Header: React.FC<HeaderProps> = ({ tools }) => {
               <span className="text-accent-foreground">Logo Settings</span>
             </>
           )}
+          {location.pathname === '/backgrounds' && (
+            <>
+              <span className="text-muted-foreground">/</span>
+              <span className="text-accent-foreground">Background Settings</span>
+            </>
+          )}
         </div>
-        <Link to="/settings">
-          <Button variant="ghost" size="icon">
-            <ImagePlus className="w-5 h-5" />
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link to="/backgrounds">
+            <Button variant="ghost" size="icon">
+              <ImageIcon className="w-5 h-5" />
+            </Button>
+          </Link>
+          <Link to="/settings">
+            <Button variant="ghost" size="icon">
+              <ImagePlus className="w-5 h-5" />
+            </Button>
+          </Link>
+        </div>
       </Container>
     </header>
   );

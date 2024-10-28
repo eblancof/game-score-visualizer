@@ -5,6 +5,7 @@ import ToolSelector from './components/ToolSelector';
 import GameScoreVisualizer from './tools/GameScoreVisualizer';
 import SingleGameVisualizer from './tools/SingleGameVisualizer';
 import LogoManager from './components/LogoManager';
+import BackgroundManager from './components/BackgroundManager';
 import { Tool } from './types/tool';
 
 const tools: Tool[] = [
@@ -37,6 +38,7 @@ const App: React.FC = () => (
           />
         ))}
         <Route path="/settings" element={<LogoManager />} />
+        <Route path="/backgrounds" element={<BackgroundManager />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>

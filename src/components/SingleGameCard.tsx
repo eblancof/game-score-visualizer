@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { GameData } from '../types/gameData';
 import { Logo } from '../hooks/useLogos';
+import { useBackgrounds } from '../hooks/useBackgrounds';
 import CornerLogos from './CornerLogos';
 import { TeamLogo } from './game/TeamLogo';
 import { GameScore } from './game/GameScore';
@@ -13,6 +14,8 @@ interface SingleGameCardProps {
 export const SingleGameCard: React.FC<SingleGameCardProps> = ({ game, logos }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const { getSelectedBackground } = useBackgrounds();
+  const selectedBackground = getSelectedBackground();
 
   useEffect(() => {
     const updateWidth = () => {
@@ -27,8 +30,17 @@ export const SingleGameCard: React.FC<SingleGameCardProps> = ({ game, logos }) =
   }, []);
 
   return (
-    <div className="game-card w-full bg-white rounded-lg shadow-lg overflow-hidden mx-auto" style={{ maxWidth: '1080px', aspectRatio: '1/1' }} ref={containerRef}>
-      <div className="w-full h-full p-[5%] flex flex-col justify-between">
+    <div className="game-card w-full bg-white rounded-lg shadow-lg overflow-hidden mx-auto relative" style={{ maxWidth: '1080px', aspectRatio: '1/1' }} ref={containerRef}>
+      {selectedBackground && (
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ 
+            backgroundImage: `url(${selectedBackground.url})`,
+            opacity: selectedBackground.opacity
+          }} 
+        />
+      )}
+      <div className="w-full h-full p-[5%] flex flex-col justify-between relative">
         <CornerLogos 
           className="h-[10%]" 
           logos={logos} 
