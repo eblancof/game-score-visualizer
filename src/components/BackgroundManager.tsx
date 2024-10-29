@@ -9,7 +9,7 @@ const BackgroundManager: React.FC = () => {
     backgrounds,
     selectedBackground,
     addBackground,
-    unselectBackground,
+    removeBackground,
     selectBackground,
     updateBackgroundOpacity
   } = useBackgrounds();
@@ -93,15 +93,20 @@ const BackgroundManager: React.FC = () => {
                   src={background.url}
                   alt={background.name}
                   className="w-full h-full object-cover"
+                  style={{ opacity: background.opacity }}
                 />
                 <div className="absolute inset-x-0 bottom-0 bg-black/50 p-2 space-y-2">
+                  <div className="flex items-center justify-between text-white text-xs mb-1 px-1">
+                    <span>Opacity</span>
+                    <span>{Math.round((background.opacity ?? 0.15) * 100)}%</span>
+                  </div>
                   <input
                     type="range"
                     min="0"
                     max="100"
                     value={(background.opacity ?? 0.15) * 100}
                     onChange={(e) => updateBackgroundOpacity(background.id, Number(e.target.value) / 100)}
-                    className="w-full"
+                    className="w-full accent-primary"
                     onClick={(e) => e.stopPropagation()}
                   />
                 </div>
@@ -111,7 +116,7 @@ const BackgroundManager: React.FC = () => {
                   className="absolute top-2 right-2 w-8 h-8"
                   onClick={(e) => {
                     e.stopPropagation();
-                    unselectBackground(background.id);
+                    removeBackground(background.id);
                   }}
                 >
                   <Trash2 className="w-4 h-4" />

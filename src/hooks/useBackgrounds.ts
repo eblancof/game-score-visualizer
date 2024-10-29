@@ -8,6 +8,7 @@ export interface Background {
 }
 
 const STORAGE_KEY = 'basketball-tools-backgrounds';
+const SELECTED_KEY = 'selected-background';
 
 export function useBackgrounds() {
   const [backgrounds, setBackgrounds] = useState<Background[]>(() => {
@@ -22,7 +23,7 @@ export function useBackgrounds() {
 
   const [selectedBackground, setSelectedBackground] = useState<string | null>(() => {
     try {
-      return localStorage.getItem('selected-background');
+      return localStorage.getItem(SELECTED_KEY);
     } catch {
       return null;
     }
@@ -39,9 +40,9 @@ export function useBackgrounds() {
   useEffect(() => {
     try {
       if (selectedBackground) {
-        localStorage.setItem('selected-background', selectedBackground);
+        localStorage.setItem(SELECTED_KEY, selectedBackground);
       } else {
-        localStorage.removeItem('selected-background');
+        localStorage.removeItem(SELECTED_KEY);
       }
     } catch (error) {
       console.error('Error saving selected background:', error);

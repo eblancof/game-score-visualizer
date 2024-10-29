@@ -25,6 +25,19 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
     clonedCard.style.padding = '0';
     clonedCard.style.backgroundColor = '#ffffff';
 
+    // Preserve background image and opacity
+    const backgroundDiv = clonedCard.querySelector('[style*="background-image"]') as HTMLElement;
+    if (backgroundDiv) {
+      const computedStyle = window.getComputedStyle(backgroundDiv);
+      backgroundDiv.style.backgroundImage = computedStyle.backgroundImage;
+      backgroundDiv.style.opacity = computedStyle.opacity;
+      backgroundDiv.style.position = 'absolute';
+      backgroundDiv.style.inset = '0';
+      backgroundDiv.style.backgroundSize = 'cover';
+      backgroundDiv.style.backgroundPosition = 'center';
+      backgroundDiv.style.backgroundRepeat = 'no-repeat';
+    }
+
     const allElements = clonedCard.getElementsByClassName('from-red-500');
     Array.from(allElements).forEach((element: Element) => {
       (element as HTMLElement).style.background = 'white';
@@ -121,8 +134,15 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
     wrapper.appendChild(clonedCard);
     document.body.appendChild(wrapper);
 
-    // Fix logo positions before capture
-   
+    // Wait for background image to load
+    const backgroundImage = backgroundDiv?.style.backgroundImage.match(/url\("(.+)"\)/)?.[1];
+    if (backgroundImage) {
+      await new Promise((resolve) => {
+        const img = new Image();
+        img.onload = resolve;
+        img.src = backgroundImage;
+      });
+    }
 
     // Wait for all images to load
     const images = clonedCard.getElementsByTagName('img');
