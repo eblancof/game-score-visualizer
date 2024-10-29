@@ -4,6 +4,7 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
   if (!cardElement) return;
 
   try {
+    // Create a wrapper with fixed dimensions
     const wrapper = document.createElement('div');
     wrapper.style.position = 'fixed';
     wrapper.style.top = '0';
@@ -12,10 +13,8 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
     wrapper.style.height = '1080px';
     wrapper.style.zIndex = '-9999';
     wrapper.style.backgroundColor = '#ffffff';
-    wrapper.style.display = 'flex';
-    wrapper.style.alignItems = 'center';
-    wrapper.style.justifyContent = 'center';
     
+    // Clone the card and prepare it for export
     const clonedCard = cardElement.cloneNode(true) as HTMLElement;
     clonedCard.style.position = 'absolute';
     clonedCard.style.width = '1080px';
@@ -23,27 +22,38 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
     clonedCard.style.transform = 'none';
     clonedCard.style.margin = '0';
     clonedCard.style.padding = '0';
-    clonedCard.style.backgroundColor = '#ffffff';
 
-    // Preserve background image and opacity
+    // Handle background
     const backgroundDiv = clonedCard.querySelector('[style*="background-image"]') as HTMLElement;
     if (backgroundDiv) {
       const computedStyle = window.getComputedStyle(backgroundDiv);
-      backgroundDiv.style.backgroundImage = computedStyle.backgroundImage;
-      backgroundDiv.style.opacity = computedStyle.opacity;
-      backgroundDiv.style.position = 'absolute';
-      backgroundDiv.style.inset = '0';
-      backgroundDiv.style.backgroundSize = 'cover';
-      backgroundDiv.style.backgroundPosition = 'center';
-      backgroundDiv.style.backgroundRepeat = 'no-repeat';
+      const newBackground = document.createElement('div');
+      newBackground.style.position = 'absolute';
+      newBackground.style.inset = '0';
+      newBackground.style.backgroundImage = computedStyle.backgroundImage;
+      newBackground.style.backgroundSize = 'cover';
+      newBackground.style.backgroundPosition = 'center';
+      newBackground.style.opacity = computedStyle.opacity;
+      newBackground.style.zIndex = '0';
+      clonedCard.insertBefore(newBackground, clonedCard.firstChild);
     }
 
-    const allElements = clonedCard.getElementsByClassName('from-red-500');
-    Array.from(allElements).forEach((element: Element) => {
-      (element as HTMLElement).style.background = 'white';
+    // Ensure content is properly layered
+    const contentDiv = clonedCard.querySelector('.w-full.h-full.p-\\[3\\%\\]') as HTMLElement;
+    if (contentDiv) {
+      contentDiv.style.position = 'relative';
+      contentDiv.style.zIndex = '1';
+      contentDiv.style.backgroundColor = 'transparent';
+    }
+
+    // Remove gradient backgrounds that might interfere
+    const gradientElements = clonedCard.getElementsByClassName('from-red-500');
+    Array.from(gradientElements).forEach((element: Element) => {
+      (element as HTMLElement).style.background = 'transparent';
       element.classList.remove('from-red-500', 'to-white', 'bg-gradient-to-b');
     });
 
+    // Add export-specific styles
     const exportStyles = document.createElement('style');
     exportStyles.textContent = `
       .game-card {
@@ -55,7 +65,7 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
         text-rendering: optimizeLegibility !important;
       }
       .game-card > div {
-        background-color: white !important;
+        background-color: transparent !important;
       }
       .game-card .text-center {
         font-size: 18.14px !important;
@@ -134,16 +144,6 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
     wrapper.appendChild(clonedCard);
     document.body.appendChild(wrapper);
 
-    // Wait for background image to load
-    const backgroundImage = backgroundDiv?.style.backgroundImage.match(/url\("(.+)"\)/)?.[1];
-    if (backgroundImage) {
-      await new Promise((resolve) => {
-        const img = new Image();
-        img.onload = resolve;
-        img.src = backgroundImage;
-      });
-    }
-
     // Wait for all images to load
     const images = clonedCard.getElementsByTagName('img');
     await Promise.all(Array.from(images).map(img => {
@@ -154,6 +154,19 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       });
     }));
 
+    // Wait for background image if it exists
+    if (backgroundDiv) {
+      const backgroundUrl = backgroundDiv.style.backgroundImage.match(/url\("(.+)"\)/)?.[1];
+      if (backgroundUrl) {
+        await new Promise((resolve) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.src = backgroundUrl;
+        });
+      }
+    }
+
+    // Capture the card with html2canvas
     const canvas = await html2canvas(clonedCard, {
       scale: 4,
       useCORS: true,
@@ -173,6 +186,7 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       }
     });
 
+    // Create the final canvas with the desired resolution
     const finalCanvas = document.createElement('canvas');
     finalCanvas.width = resolution;
     finalCanvas.height = resolution;
@@ -192,8 +206,10 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       ctx.drawImage(canvas, x, y, size, size);
     }
 
+    // Clean up
     document.body.removeChild(wrapper);
 
+    // Download the image
     const link = document.createElement('a');
     const filename = index 
       ? `basketball-results-${index}-${resolution}x${resolution}.png`
