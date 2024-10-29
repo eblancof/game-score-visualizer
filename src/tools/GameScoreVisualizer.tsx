@@ -6,7 +6,9 @@ import { generateCards } from '../utils/cardGenerator';
 import GameSlider from '../components/GameSlider';
 import GameList from '../components/GameList';
 import ViewToggle from '../components/ViewToggle';
+import ColorPicker from '../components/ColorPicker';
 import { useLogos } from '../hooks/useLogos';
+import { useTextColors } from '../hooks/useTextColors';
 
 const GameScoreVisualizer: React.FC = () => {
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -17,6 +19,7 @@ const GameScoreVisualizer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<'slider' | 'list'>('slider');
   const { logos } = useLogos();
+  const { textColors, updateTextColor, resetColors } = useTextColors();
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -51,12 +54,20 @@ const GameScoreVisualizer: React.FC = () => {
         <ViewToggle view={view} onViewChange={setView} />
         {view === 'slider' && <GameSlider.ExportOptions />}
       </div>
+
+      {view === 'slider' && (
+        <ColorPicker
+          colors={textColors}
+          onColorChange={updateTextColor}
+          onReset={resetColors}
+        />
+      )}
       
       {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
       {loading ? (
         <p className="text-muted-foreground text-center">Loading...</p>
       ) : view === 'slider' ? (
-        <GameSlider cards={cards} logos={logos} />
+        <GameSlider cards={cards} logos={logos} textColors={textColors} />
       ) : (
         <GameList cards={cards} />
       )}

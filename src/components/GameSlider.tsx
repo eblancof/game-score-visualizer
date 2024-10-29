@@ -5,10 +5,12 @@ import { GameData } from '../types/gameData';
 import { GameCard } from './GameCard';
 import { downloadCard } from '../utils/downloadCards';
 import { Logo } from '../hooks/useLogos';
+import { TextColors } from '../hooks/useTextColors';
 
 interface GameSliderProps {
   cards: GameData[][];
   logos: Logo[];
+  textColors?: TextColors;
 }
 
 const ExportOptions: React.FC = () => {
@@ -70,7 +72,11 @@ const ExportOptions: React.FC = () => {
   );
 };
 
-const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOptions } = ({ cards, logos }) => {
+const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOptions } = ({ 
+  cards, 
+  logos,
+  textColors
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentCardRef = useRef<HTMLDivElement>(null);
 
@@ -98,7 +104,11 @@ const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOpti
             >
               {cards.map((cardGames, index) => (
                 <div key={index} className="w-full h-full flex-shrink-0">
-                  <GameCard games={cardGames} logos={logos} />
+                  <GameCard 
+                    games={cardGames} 
+                    logos={logos}
+                    textColors={textColors}
+                  />
                 </div>
               ))}
             </div>

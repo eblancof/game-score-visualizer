@@ -2,15 +2,21 @@ import React, { useRef, useEffect, useState } from 'react';
 import { GameData } from '../types/gameData';
 import { Logo } from '../hooks/useLogos';
 import { useBackgrounds } from '../hooks/useBackgrounds';
+import { TextColors } from '../hooks/useTextColors';
 import CornerLogos from './CornerLogos';
 import { GameMatch } from './game/GameMatch';
 
 interface GameCardProps {
   games: GameData[];
   logos: Logo[];
+  textColors?: TextColors;
 }
 
-export const GameCard: React.FC<GameCardProps> = ({ games, logos }) => {
+export const GameCard: React.FC<GameCardProps> = ({ 
+  games, 
+  logos,
+  textColors
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const maxGames = Math.min(games.length, 6);
@@ -51,7 +57,11 @@ export const GameCard: React.FC<GameCardProps> = ({ games, logos }) => {
 
         <div className="flex-1 flex flex-col justify-around py-[2%]">
           {gamesList.map((game) => (
-            <GameMatch key={game.id} game={game} />
+            <GameMatch 
+              key={game.id} 
+              game={game}
+              textColors={textColors}
+            />
           ))}
         </div>
 
