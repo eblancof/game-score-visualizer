@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import DateRangePicker from '../components/DateRangePicker';
 import { fetchGameData } from '../utils/api';
 import { GameData } from '../types/gameData';
@@ -9,6 +9,7 @@ import ViewToggle from '../components/ViewToggle';
 import ColorPicker from '../components/ColorPicker';
 import { useLogos } from '../hooks/useLogos';
 import { useTextColors } from '../hooks/useTextColors';
+import { useBackgrounds } from '../hooks/useBackgrounds';
 
 const GameScoreVisualizer: React.FC = () => {
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -20,31 +21,35 @@ const GameScoreVisualizer: React.FC = () => {
   const [view, setView] = useState<'slider' | 'list'>('slider');
   const { logos } = useLogos();
   const { textColors, updateTextColor, resetColors } = useTextColors();
+  const { getSelectedBackground } = useBackgrounds();
 
-  useEffect(() => {
-    const fetchGames = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await fetchGameData(startDate, endDate);
-        setGames(data);
-        const generatedCards = generateCards(data);
-        setCards(generatedCards);
-      } catch (err) {
-        setError('Failed to fetch game data. Please try again.');
-        console.error('Error fetching game data:', err);
-      } finally {
-        setLoading(false);
+  const fetchGames = useCallback(async (start: Date, end: Date) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchGameData(start, end);
+      setGames(data);
+      const generatedCards = generateCards(data);
+      setCards(generatedCards);
+
+      // Generate new color palette based on background
+      const background = getSelectedBackground();
+      if (background) {
+        await resetColors();
       }
-    };
+    } catch (err) {
+      setError('Failed to fetch game data. Please try again.');
+      console.error('Error fetching game data:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [getSelectedBackground, resetColors]);
 
-    fetchGames();
-  }, [startDate, endDate]);
-
-  const handleDateChange = (start: Date, end: Date) => {
+  const handleDateChange = useCallback((start: Date, end: Date) => {
     setStartDate(start);
     setEndDate(end);
-  };
+    fetchGames(start, end);
+  }, [fetchGames]);
 
   return (
     <div>

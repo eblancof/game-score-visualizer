@@ -24,6 +24,13 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     { key: 'score', label: 'Score', description: 'Score numbers color' },
   ];
 
+  const handleColorChange = (key: keyof TextColors, value: string) => {
+    // Validate hex color format
+    if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+      onColorChange(key, value);
+    }
+  };
+
   return (
     <div 
       className={cn(
@@ -78,16 +85,16 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                 <div className="relative">
                   <input
                     type="color"
-                    value={colors[key as keyof TextColors]}
-                    onChange={(e) => onColorChange(key as keyof TextColors, e.target.value)}
+                    value={colors[key as keyof TextColors] || '#000000'}
+                    onChange={(e) => handleColorChange(key as keyof TextColors, e.target.value)}
                     className="w-8 h-8 rounded cursor-pointer"
                   />
                   <div className="absolute inset-0 rounded ring-1 ring-border pointer-events-none" />
                 </div>
                 <input
                   type="text"
-                  value={colors[key as keyof TextColors]}
-                  onChange={(e) => onColorChange(key as keyof TextColors, e.target.value)}
+                  value={colors[key as keyof TextColors] || '#000000'}
+                  onChange={(e) => handleColorChange(key as keyof TextColors, e.target.value)}
                   className="flex-1 px-2 py-1 text-xs rounded bg-muted border border-border font-mono"
                   pattern="^#[0-9A-Fa-f]{6}$"
                   placeholder="#000000"

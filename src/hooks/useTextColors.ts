@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useBackgrounds } from './useBackgrounds';
 import { generateContrastingColors } from '../utils/colors';
 
@@ -10,10 +10,10 @@ export interface TextColors {
 }
 
 const DEFAULT_COLORS: TextColors = {
-  competition: '#991B1B', // red-800
-  dateTime: '#1F2937', // gray-800
-  teamName: '#1F2937', // gray-800
-  score: '#1F2937', // gray-800
+  competition: '#991B1B',
+  dateTime: '#1F2937',
+  teamName: '#1F2937',
+  score: '#1F2937',
 };
 
 const STORAGE_KEY = 'basketball-tools-text-colors';
@@ -23,19 +23,35 @@ export function useTextColors() {
   const [textColors, setTextColors] = useState<TextColors>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) return JSON.parse(stored);
-      
-      const background = getSelectedBackground();
-      if (background) {
-        return generateContrastingColors(background.url);
-      }
-      
-      return DEFAULT_COLORS;
+      return stored ? JSON.parse(stored) : DEFAULT_COLORS;
     } catch {
       return DEFAULT_COLORS;
     }
   });
 
+  const updateTextColor = useCallback((key: keyof TextColors, color: string) => {
+    setTextColors(prev => ({
+      ...prev,
+      [key]: color
+    }));
+  }, []);
+
+  const resetColors = useCallback(async () => {
+    const background = getSelectedBackground();
+    if (background) {
+      try {
+        const colors = await generateContrastingColors(background.url);
+        setTextColors(colors);
+      } catch (error) {
+        console.error('Error generating colors:', error);
+        setTextColors(DEFAULT_COLORS);
+      }
+    } else {
+      setTextColors(DEFAULT_COLORS);
+    }
+  }, [getSelectedBackground]);
+
+  // Save colors to localStorage when they change
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(textColors));
@@ -48,29 +64,18 @@ export function useTextColors() {
   useEffect(() => {
     const background = getSelectedBackground();
     if (background) {
-      const newColors = generateContrastingColors(background.url);
-      setTextColors(prev => ({
-        ...prev,
-        ...newColors
-      }));
+      generateContrastingColors(background.url)
+        .then(colors => {
+          setTextColors(prev => ({
+            ...prev,
+            ...colors
+          }));
+        })
+        .catch(error => {
+          console.error('Error generating colors:', error);
+        });
     }
   }, [getSelectedBackground]);
-
-  const updateTextColor = (key: keyof TextColors, color: string) => {
-    setTextColors(prev => ({
-      ...prev,
-      [key]: color
-    }));
-  };
-
-  const resetColors = () => {
-    const background = getSelectedBackground();
-    if (background) {
-      setTextColors(generateContrastingColors(background.url));
-    } else {
-      setTextColors(DEFAULT_COLORS);
-    }
-  };
 
   return {
     textColors,
