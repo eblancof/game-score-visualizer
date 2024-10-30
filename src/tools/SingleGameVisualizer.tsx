@@ -5,6 +5,8 @@ import SingleGameCard from '../components/SingleGameCard';
 import SingleGamePicker from '../components/SingleGamePicker';
 import SingleGameExport from '../components/SingleGameExport';
 import { useLogos } from '../hooks/useLogos';
+import { useTextColors } from '../hooks/useTextColors';
+import ColorPicker from '../components/ColorPicker';
 import { Button } from '../components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
@@ -15,6 +17,7 @@ const SingleGameVisualizer: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { logos } = useLogos();
+  const { textColors, updateTextColor, resetColors } = useTextColors();
 
   const handleDateSelect = async (date: Date) => {
     setLoading(true);
@@ -62,7 +65,18 @@ const SingleGameVisualizer: React.FC = () => {
             </Button>
             <SingleGameExport />
           </div>
-          <SingleGameCard game={selectedGame} logos={logos} />
+
+          <ColorPicker
+            colors={textColors}
+            onColorChange={updateTextColor}
+            onReset={resetColors}
+          />
+
+          <SingleGameCard 
+            game={selectedGame} 
+            logos={logos}
+            textColors={textColors}
+          />
         </div>
       )}
     </div>

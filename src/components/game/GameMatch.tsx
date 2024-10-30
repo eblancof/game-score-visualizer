@@ -19,29 +19,29 @@ export const GameMatch: React.FC<GameMatchProps> = ({
   <div className={`flex flex-col items-center justify-center ${className}`}>
     <GameInfo 
       game={game} 
-      className="mb-[1%] mx-auto" 
+      className="mb-[10.8px] mx-auto" 
       textColors={textColors}
     />
 
-    <div className="flex items-center justify-between w-full px-[3%]">
+    <div className="flex items-center justify-between w-full px-[32.4px]">
       <TeamDisplay 
         team={game.localTeam} 
         alignment="left" 
-        className="w-[38%]"
+        className="w-[410.4px]"
         textColors={textColors}
       />
 
       <GameScore
         localScore={game.localScore}
         visitorScore={game.visitorScore}
-        className="px-[2%] py-[1.5%] bg-gray-100 rounded-lg w-[15%] mx-[2%] shadow-sm"
+        className="px-[21.6px] py-[16.2px] bg-gray-100 rounded-lg w-[162px] mx-[21.6px] shadow-sm"
         textColors={textColors}
       />
 
       <TeamDisplay 
         team={game.visitorTeam} 
         alignment="right" 
-        className="w-[38%]"
+        className="w-[410.4px]"
         textColors={textColors}
       />
     </div>

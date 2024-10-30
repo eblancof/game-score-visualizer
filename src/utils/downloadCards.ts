@@ -46,99 +46,10 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       contentDiv.style.backgroundColor = 'transparent';
     }
 
-    // Remove gradient backgrounds that might interfere
-    const gradientElements = clonedCard.getElementsByClassName('from-red-500');
-    Array.from(gradientElements).forEach((element: Element) => {
-      (element as HTMLElement).style.background = 'transparent';
-      element.classList.remove('from-red-500', 'to-white', 'bg-gradient-to-b');
-    });
 
     // Add export-specific styles
     const exportStyles = document.createElement('style');
-    exportStyles.textContent = `
-      .game-card {
-        width: 1080px !important;
-        height: 1080px !important;
-        background-color: white !important;
-        -webkit-font-smoothing: antialiased !important;
-        -moz-osx-font-smoothing: grayscale !important;
-        text-rendering: optimizeLegibility !important;
-      }
-      .game-card > div {
-        background-color: transparent !important;
-      }
-      .game-card .text-center {
-        font-size: 18.14px !important;
-      }
-      .game-card .font-semibold {
-        font-size: 20.41px !important;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-      }
-      .game-card .font-bold {
-        font-size: 22.68px !important;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-        line-height: 1.2 !important;
-      }
-      .game-card .text-gray-500 {
-        font-size: 13.65px !important;
-      }
-      .game-card img {
-        width: auto !important;
-        height: auto !important;
-        max-width: 100% !important;
-        max-height: 100% !important;
-        object-fit: contain !important;
-        image-rendering: -webkit-optimize-contrast !important;
-        image-rendering: crisp-edges !important;
-      }
-      .game-card img.rounded-full {
-        width: 57px !important;
-        height: 57px !important;
-        filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15)) !important;
-        border: 1.5px solid rgba(255,255,255,0.8) !important;
-        object-fit: cover !important;
-      }
-      .game-card .w-[15%] {
-        width: 162px !important;
-      }
-      .game-card .w-[38%] {
-        width: 410.4px !important;
-      }
-      .game-card .p-[3%] {
-        padding: 32.4px !important;
-      }
-      .game-card .py-[2%] {
-        padding-top: 21.6px !important;
-        padding-bottom: 21.6px !important;
-      }
-      .game-card .py-[1.5%] {
-        padding-top: 16.2px !important;
-        padding-bottom: 16.2px !important;
-      }
-      .game-card .px-[3%] {
-        padding-left: 32.4px !important;
-        padding-right: 32.4px !important;
-      }
-      .game-card .gap-[3%] {
-        gap: 32.4px !important;
-      }
-      .game-card .mb-[1%] {
-        margin-bottom: 10.8px !important;
-      }
-      .game-card .mx-[2%] {
-        margin-left: 21.6px !important;
-        margin-right: 21.6px !important;
-      }
-      .game-card .aspect-[2/1] {
-        aspect-ratio: 2/1 !important;
-      }
-      .game-card .text-gray-800 {
-        text-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-      }
-      .game-card .text-red-800 {
-        text-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-      }
-    `;
+
     
     clonedCard.appendChild(exportStyles);
     wrapper.appendChild(clonedCard);

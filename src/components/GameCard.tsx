@@ -18,59 +18,78 @@ export const GameCard: React.FC<GameCardProps> = ({
   textColors
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState(0);
+  const [scale, setScale] = useState(1);
   const maxGames = Math.min(games.length, 6);
   const gamesList = games.slice(0, maxGames);
   const { getSelectedBackground } = useBackgrounds();
   const selectedBackground = getSelectedBackground();
 
   useEffect(() => {
-    const updateWidth = () => {
+    const updateScale = () => {
       if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
+        const containerWidth = containerRef.current.offsetWidth;
+        setScale(containerWidth / 1080); // Base size is 1080px
       }
     };
 
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
   }, []);
 
   return (
-    <div className="game-card w-full h-full bg-[#ffffff] rounded-lg shadow-lg overflow-hidden relative" ref={containerRef}>
-      {selectedBackground && (
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ 
-            backgroundImage: `url(${selectedBackground.url})`,
-            opacity: selectedBackground.opacity
-          }} 
-        />
-      )}
-      <div className="w-full h-full p-[3%] flex flex-col justify-between relative" style={{ maxWidth: '1080px', margin: '0 auto' }}>
-        <CornerLogos 
-          className="h-[10%]" 
-          logos={logos} 
-          section="top"
-          containerWidth={containerWidth}
-        />
+    <div 
+      className="game-card relative w-full"
+      style={{ aspectRatio: '1/1' }}
+      ref={containerRef}
+    >
+      <div 
+        className="absolute inset-0 origin-top-left"
+        style={{ 
+          width: '1080px',
+          height: '1080px',
+          transform: `scale(${scale})`,
+          backgroundColor: '#ffffff',
+          borderRadius: '0.5rem',
+          overflow: 'hidden',
+          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
+        }}
+      >
+        {selectedBackground && (
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ 
+              backgroundImage: `url(${selectedBackground.url})`,
+              opacity: selectedBackground.opacity
+            }} 
+          />
+        )}
+        
+        <div className="w-full h-full p-[32.4px] flex flex-col justify-between relative">
+          <CornerLogos 
+            className="h-[108px]"
+            logos={logos} 
+            section="top"
+            containerWidth={1080}
+          />
 
-        <div className="flex-1 flex flex-col justify-around py-[2%]">
-          {gamesList.map((game) => (
-            <GameMatch 
-              key={game.id} 
-              game={game}
-              textColors={textColors}
-            />
-          ))}
+          <div className="flex-1 flex flex-col justify-around py-[21.6px]">
+            {gamesList.map((game) => (
+              <GameMatch 
+                key={game.id} 
+                game={game}
+                textColors={textColors}
+              />
+            ))}
+          </div>
+
+          <CornerLogos 
+            className="h-[108px]"
+            logos={logos} 
+            section="bottom"
+            containerWidth={1080}
+          />
         </div>
-
-        <CornerLogos 
-          className="h-[10%]" 
-          logos={logos} 
-          section="bottom"
-          containerWidth={containerWidth}
-        />
       </div>
     </div>
   );

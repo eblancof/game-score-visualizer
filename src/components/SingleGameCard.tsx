@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { GameData } from '../types/gameData';
 import { Logo } from '../hooks/useLogos';
 import { useBackgrounds } from '../hooks/useBackgrounds';
+import { TextColors } from '../hooks/useTextColors';
 import CornerLogos from './CornerLogos';
 import { TeamLogo } from './game/TeamLogo';
 import { GameScore } from './game/GameScore';
@@ -9,93 +10,136 @@ import { GameScore } from './game/GameScore';
 interface SingleGameCardProps {
   game: GameData;
   logos: Logo[];
+  textColors?: TextColors;
 }
 
-export const SingleGameCard: React.FC<SingleGameCardProps> = ({ game, logos }) => {
+const SingleGameCard: React.FC<SingleGameCardProps> = ({ 
+  game, 
+  logos,
+  textColors
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState(0);
+  const [scale, setScale] = useState(1);
   const { getSelectedBackground } = useBackgrounds();
   const selectedBackground = getSelectedBackground();
 
   useEffect(() => {
-    const updateWidth = () => {
+    const updateScale = () => {
       if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
+        const containerWidth = containerRef.current.offsetWidth;
+        setScale(containerWidth / 1080);
       }
     };
 
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
   }, []);
 
   return (
-    <div className="game-card w-full bg-white rounded-lg shadow-lg overflow-hidden mx-auto relative" style={{ maxWidth: '1080px', aspectRatio: '1/1' }} ref={containerRef}>
-      {selectedBackground && (
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ 
-            backgroundImage: `url(${selectedBackground.url})`,
-            opacity: selectedBackground.opacity
-          }} 
-        />
-      )}
-      <div className="w-full h-full p-[5%] flex flex-col justify-between relative">
-        <CornerLogos 
-          className="h-[10%]" 
-          logos={logos} 
-          section="top"
-          containerWidth={containerWidth}
-        />
+    <div 
+      className="game-card relative w-full"
+      style={{ aspectRatio: '1/1' }}
+      ref={containerRef}
+    >
+      <div 
+        className="absolute inset-0 origin-top-left"
+        style={{ 
+          width: '1080px',
+          height: '1080px',
+          transform: `scale(${scale})`,
+          backgroundColor: '#ffffff',
+          borderRadius: '0.5rem',
+          overflow: 'hidden',
+          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
+        }}
+      >
+        {selectedBackground && (
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ 
+              backgroundImage: `url(${selectedBackground.url})`,
+              opacity: selectedBackground.opacity
+            }} 
+          />
+        )}
 
-        <div className="flex-1 flex flex-col justify-center items-center gap-8">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl font-bold text-purple-800">
-              {game.competition.name.toUpperCase()}
-            </h2>
-            <p className="text-gray-600">
-              {new Date(game.date).toLocaleDateString('es-ES', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-              })}{' '}
-              -{' '}
-              {new Date(game.date).toLocaleTimeString('es-ES', {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </p>
-          </div>
+        <div className="w-full h-full p-[54px] flex flex-col justify-between relative">
+          <CornerLogos 
+            className="h-[108px]"
+            logos={logos} 
+            section="top"
+            containerWidth={1080}
+          />
 
-          <div className="flex items-center justify-between w-full px-[5%] gap-6">
-            <div className="flex flex-col items-center gap-4 flex-1">
-              <TeamLogo team={game.localTeam} className="w-[120px] h-[120px] ring-2 ring-black/10" />
-              <h3 className="text-xl font-bold text-center text-gray-800">
-                {game.localTeam.club.name.toUpperCase()}
-              </h3>
+          <div className="flex-1 flex flex-col justify-center items-center gap-[86.4px]">
+            <div className="text-center space-y-[21.6px]">
+              <h2 
+                className="text-[32.4px] font-bold"
+                style={{ color: textColors?.competition }}
+              >
+                {game.competition.name.toUpperCase()}
+              </h2>
+              <p 
+                className="text-[21.6px]"
+                style={{ color: textColors?.dateTime }}
+              >
+                {new Date(game.date).toLocaleDateString('es-ES', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long',
+                })}{' '}
+                -{' '}
+                {new Date(game.date).toLocaleTimeString('es-ES', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </p>
             </div>
 
-            <GameScore
-              localScore={game.localScore}
-              visitorScore={game.visitorScore}
-              className="px-6 py-4 bg-gray-100 rounded-2xl shadow-inner [&_span]:text-4xl"
-            />
+            <div className="flex items-center justify-between w-full px-[54px] gap-[64.8px]">
+              <div className="flex flex-col items-center gap-[43.2px] flex-1">
+                <TeamLogo 
+                  team={game.localTeam} 
+                  className="!w-[129.6px] !h-[129.6px] ring-2 ring-black/10" 
+                />
+                <h3 
+                  className="text-[25.92px] font-bold text-center"
+                  style={{ color: textColors?.teamName }}
+                >
+                  {game.localTeam.club.name.toUpperCase()}
+                </h3>
+              </div>
 
-            <div className="flex flex-col items-center gap-4 flex-1">
-              <TeamLogo team={game.visitorTeam} className="w-[120px] h-[120px] ring-2 ring-black/10" />
-              <h3 className="text-xl font-bold text-center text-gray-800">
-                {game.visitorTeam.club.name.toUpperCase()}
-              </h3>
+              <GameScore
+                localScore={game.localScore}
+                visitorScore={game.visitorScore}
+                className="px-[64.8px] py-[43.2px] bg-gray-100 rounded-2xl shadow-inner [&_span]:text-[43.2px]"
+                textColors={textColors}
+              />
+
+              <div className="flex flex-col items-center gap-[43.2px] flex-1">
+                <TeamLogo 
+                  team={game.visitorTeam} 
+                  className="!w-[129.6px] !h-[129.6px] ring-2 ring-black/10" 
+                />
+                <h3 
+                  className="text-[25.92px] font-bold text-center"
+                  style={{ color: textColors?.teamName }}
+                >
+                  {game.visitorTeam.club.name.toUpperCase()}
+                </h3>
+              </div>
             </div>
           </div>
+
+          <CornerLogos 
+            className="h-[108px]"
+            logos={logos} 
+            section="bottom"
+            containerWidth={1080}
+          />
         </div>
-
-        <CornerLogos 
-          className="h-[10%]" 
-          logos={logos} 
-          section="bottom"
-          containerWidth={containerWidth}
-        />
       </div>
     </div>
   );

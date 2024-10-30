@@ -19,12 +19,12 @@ export const TeamDisplay: React.FC<TeamDisplayProps> = ({
   const flexDirection = alignment === 'left' ? 'flex-row' : 'flex-row-reverse';
   
   return (
-    <div className={`flex items-center gap-[3%] ${flexDirection} ${className}`}>
+    <div className={`flex items-center gap-[32.4px] ${flexDirection} ${className}`}>
       <TeamLogo team={team} />
       <div 
-        className="font-semibold text-center flex-1" 
+        className="font-semibold text-center flex-1"
         style={{ 
-          fontSize: 'min(1.89vw, 20.41px)',
+          fontSize: '20.41px',
           color: textColors?.teamName
         }}
       >

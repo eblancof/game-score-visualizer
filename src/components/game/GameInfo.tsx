@@ -13,7 +13,10 @@ export const GameInfo: React.FC<GameInfoProps> = ({
   className = '',
   textColors
 }) => (
-  <div className={`text-center ${className}`} style={{ fontSize: 'min(1.68vw, 18.14px)' }}>
+  <div 
+    className={`text-center ${className}`}
+    style={{ fontSize: '18.14px' }}
+  >
     <span style={{ color: textColors?.dateTime }}>
       {new Date(game.date).toLocaleDateString('es-ES', {
         weekday: 'long',

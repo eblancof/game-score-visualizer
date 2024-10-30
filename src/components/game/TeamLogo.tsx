@@ -12,7 +12,10 @@ export const TeamLogo: React.FC<TeamLogoProps> = ({ team, className = '' }) => (
     src={getValidImageUrl(team)}
     alt={team.club.name}
     className={`rounded-full object-cover shadow-sm ring-1 ring-black/5 ${className}`}
-    style={{ width: 'min(15.75%, 57px)', aspectRatio: '1/1' }}
+    style={{ 
+      width: '57px',
+      height: '57px'
+    }}
     loading="eager"
     onError={(e) => {
       (e.target as HTMLImageElement).src = 'https://placehold.co/57x57/png?text=Logo';
