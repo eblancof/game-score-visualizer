@@ -29,6 +29,7 @@ export const GameMatch: React.FC<GameMatchProps> = ({
         alignment="left" 
         className="w-[410.4px]"
         textColors={textColors}
+        type="local"
       />
 
       <GameScore
@@ -43,6 +44,7 @@ export const GameMatch: React.FC<GameMatchProps> = ({
         alignment="right" 
         className="w-[410.4px]"
         textColors={textColors}
+        type="visitor"
       />
     </div>
   </div>

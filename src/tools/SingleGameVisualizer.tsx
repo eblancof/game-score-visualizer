@@ -6,6 +6,7 @@ import SingleGamePicker from '../components/SingleGamePicker';
 import SingleGameExport from '../components/SingleGameExport';
 import { useLogos } from '../hooks/useLogos';
 import { useTextColors } from '../hooks/useTextColors';
+import { useShieldSize } from '../hooks/useShieldSize';
 import ColorPicker from '../components/ColorPicker';
 import { Button } from '../components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -18,6 +19,7 @@ const SingleGameVisualizer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { logos } = useLogos();
   const { textColors, updateTextColor, resetColors } = useTextColors();
+  const { shieldSizes } = useShieldSize();
 
   const handleDateSelect = async (date: Date) => {
     setLoading(true);
@@ -76,6 +78,7 @@ const SingleGameVisualizer: React.FC = () => {
             game={selectedGame} 
             logos={logos}
             textColors={textColors}
+            key={`${shieldSizes.local}-${shieldSizes.visitor}`}
           />
         </div>
       )}

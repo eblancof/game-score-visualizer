@@ -10,6 +10,7 @@ import ColorPicker from '../components/ColorPicker';
 import { useLogos } from '../hooks/useLogos';
 import { useTextColors } from '../hooks/useTextColors';
 import { useBackgrounds } from '../hooks/useBackgrounds';
+import { useShieldSize } from '../hooks/useShieldSize';
 
 const GameScoreVisualizer: React.FC = () => {
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -22,6 +23,7 @@ const GameScoreVisualizer: React.FC = () => {
   const { logos } = useLogos();
   const { textColors, updateTextColor, resetColors } = useTextColors();
   const { getSelectedBackground } = useBackgrounds();
+  const { shieldSizes } = useShieldSize();
 
   const fetchGames = useCallback(async (start: Date, end: Date) => {
     setLoading(true);
@@ -72,7 +74,12 @@ const GameScoreVisualizer: React.FC = () => {
       {loading ? (
         <p className="text-muted-foreground text-center">Loading...</p>
       ) : view === 'slider' ? (
-        <GameSlider cards={cards} logos={logos} textColors={textColors} />
+        <GameSlider 
+          cards={cards} 
+          logos={logos} 
+          textColors={textColors}
+          key={`${shieldSizes.local}-${shieldSizes.visitor}`} // Force re-render on shield size changes
+        />
       ) : (
         <GameList cards={cards} />
       )}

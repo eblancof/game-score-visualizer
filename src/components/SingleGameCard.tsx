@@ -3,6 +3,7 @@ import { GameData } from '../types/gameData';
 import { Logo } from '../hooks/useLogos';
 import { useBackgrounds } from '../hooks/useBackgrounds';
 import { TextColors } from '../hooks/useTextColors';
+import { useTextColors } from '../hooks/useTextColors';
 import CornerLogos from './CornerLogos';
 import { TeamLogo } from './game/TeamLogo';
 import { GameScore } from './game/GameScore';
@@ -22,6 +23,7 @@ const SingleGameCard: React.FC<SingleGameCardProps> = ({
   const [scale, setScale] = useState(1);
   const { getSelectedBackground } = useBackgrounds();
   const selectedBackground = getSelectedBackground();
+  const { fonts } = useTextColors();
 
   useEffect(() => {
     const updateScale = () => {
@@ -75,14 +77,20 @@ const SingleGameCard: React.FC<SingleGameCardProps> = ({
           <div className="flex-1 flex flex-col justify-center items-center gap-[86.4px]">
             <div className="text-center space-y-[21.6px]">
               <h2 
-                className="text-[32.4px] font-bold"
-                style={{ color: textColors?.competition }}
+                style={{ 
+                  color: textColors?.competition,
+                  fontFamily: fonts.competition.family,
+                  fontSize: `${fonts.competition.size}px`
+                }}
               >
                 {game.competition.name.toUpperCase()}
               </h2>
               <p 
-                className="text-[21.6px]"
-                style={{ color: textColors?.dateTime }}
+                style={{ 
+                  color: textColors?.dateTime,
+                  fontFamily: fonts.dateTime.family,
+                  fontSize: `${fonts.dateTime.size}px`
+                }}
               >
                 {new Date(game.date).toLocaleDateString('es-ES', {
                   weekday: 'long',
@@ -101,11 +109,15 @@ const SingleGameCard: React.FC<SingleGameCardProps> = ({
               <div className="flex flex-col items-center gap-[43.2px] flex-1">
                 <TeamLogo 
                   team={game.localTeam} 
-                  className="!w-[129.6px] !h-[129.6px] ring-2 ring-black/10" 
+                  className="ring-2 ring-black/10" 
+                  type="local"
                 />
                 <h3 
-                  className="text-[25.92px] font-bold text-center"
-                  style={{ color: textColors?.teamName }}
+                  style={{ 
+                    color: textColors?.teamName,
+                    fontFamily: fonts.teamName.family,
+                    fontSize: `${fonts.teamName.size}px`
+                  }}
                 >
                   {game.localTeam.club.name.toUpperCase()}
                 </h3>
@@ -114,18 +126,22 @@ const SingleGameCard: React.FC<SingleGameCardProps> = ({
               <GameScore
                 localScore={game.localScore}
                 visitorScore={game.visitorScore}
-                className="px-[64.8px] py-[43.2px] bg-gray-100 rounded-2xl shadow-inner [&_span]:text-[43.2px]"
+                className="px-[64.8px] py-[43.2px] bg-gray-100 rounded-2xl shadow-inner"
                 textColors={textColors}
               />
 
               <div className="flex flex-col items-center gap-[43.2px] flex-1">
                 <TeamLogo 
                   team={game.visitorTeam} 
-                  className="!w-[129.6px] !h-[129.6px] ring-2 ring-black/10" 
+                  className="ring-2 ring-black/10" 
+                  type="visitor"
                 />
                 <h3 
-                  className="text-[25.92px] font-bold text-center"
-                  style={{ color: textColors?.teamName }}
+                  style={{ 
+                    color: textColors?.teamName,
+                    fontFamily: fonts.teamName.family,
+                    fontSize: `${fonts.teamName.size}px`
+                  }}
                 >
                   {game.visitorTeam.club.name.toUpperCase()}
                 </h3>
