@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
-import { Paintbrush, RotateCcw, ChevronRight } from 'lucide-react';
+import { Paintbrush, Type, RotateCcw, ChevronRight } from 'lucide-react';
 import { TextColors } from '../hooks/useTextColors';
 import { cn } from '../lib/utils';
+import { useGoogleFonts } from '../hooks/useGoogleFonts';
 
 interface ColorPickerProps {
   colors: TextColors;
@@ -10,13 +11,17 @@ interface ColorPickerProps {
   onReset: () => void;
 }
 
+type Tab = 'colors' | 'fonts';
+
 const ColorPicker: React.FC<ColorPickerProps> = ({
   colors,
   onColorChange,
   onReset
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>('colors');
   const pickerRef = useRef<HTMLDivElement>(null);
+  const { fonts, selectedFonts, updateFont, resetFonts } = useGoogleFonts();
 
   const colorOptions = [
     { key: 'competition', label: 'Competition', description: 'Competition name color' },
@@ -26,7 +31,6 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   ];
 
   const handleColorChange = (key: keyof TextColors, value: string) => {
-    // Validate hex color format
     if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
       onColorChange(key, value);
     }
@@ -67,56 +71,103 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 
       <div className="w-72 bg-card/95 backdrop-blur-sm shadow-lg rounded-l-lg border-l border-y border-border h-[80vh] flex flex-col">
         <div className="p-4 border-b border-border bg-muted/50">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-medium text-foreground flex items-center gap-2">
-              <Paintbrush className="w-4 h-4" />
-              Text Colors
-            </h2>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex gap-2">
+              <Button
+                variant={activeTab === 'colors' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveTab('colors')}
+                className="h-8"
+              >
+                <Paintbrush className="w-4 h-4 mr-2" />
+                Colors
+              </Button>
+              <Button
+                variant={activeTab === 'fonts' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveTab('fonts')}
+                className="h-8"
+              >
+                <Type className="w-4 h-4 mr-2" />
+                Fonts
+              </Button>
+            </div>
             <Button
               variant="ghost"
               size="sm"
-              onClick={onReset}
-              className="h-7 px-2"
+              onClick={activeTab === 'colors' ? onReset : resetFonts}
+              className="h-8"
             >
               <RotateCcw className="w-3 h-3" />
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Customize text colors for different elements
-          </p>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {colorOptions.map(({ key, label, description }) => (
-            <div
-              key={key}
-              className="space-y-2"
-            >
-              <label className="flex flex-col">
-                <span className="text-sm font-medium">{label}</span>
-                <span className="text-xs text-muted-foreground">{description}</span>
-              </label>
-              <div className="flex items-center gap-2">
-                <div className="relative">
+          {activeTab === 'colors' ? (
+            // Colors Tab
+            colorOptions.map(({ key, label, description }) => (
+              <div
+                key={key}
+                className="space-y-2"
+              >
+                <label className="flex flex-col">
+                  <span className="text-sm font-medium">{label}</span>
+                  <span className="text-xs text-muted-foreground">{description}</span>
+                </label>
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <input
+                      type="color"
+                      value={colors[key as keyof TextColors] || '#000000'}
+                      onChange={(e) => handleColorChange(key as keyof TextColors, e.target.value)}
+                      className="w-8 h-8 rounded cursor-pointer"
+                    />
+                    <div className="absolute inset-0 rounded ring-1 ring-border pointer-events-none" />
+                  </div>
                   <input
-                    type="color"
+                    type="text"
                     value={colors[key as keyof TextColors] || '#000000'}
                     onChange={(e) => handleColorChange(key as keyof TextColors, e.target.value)}
-                    className="w-8 h-8 rounded cursor-pointer"
+                    className="flex-1 px-2 py-1 text-xs rounded bg-muted border border-border font-mono"
+                    pattern="^#[0-9A-Fa-f]{6}$"
+                    placeholder="#000000"
                   />
-                  <div className="absolute inset-0 rounded ring-1 ring-border pointer-events-none" />
                 </div>
-                <input
-                  type="text"
-                  value={colors[key as keyof TextColors] || '#000000'}
-                  onChange={(e) => handleColorChange(key as keyof TextColors, e.target.value)}
-                  className="flex-1 px-2 py-1 text-xs rounded bg-muted border border-border font-mono"
-                  pattern="^#[0-9A-Fa-f]{6}$"
-                  placeholder="#000000"
-                />
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            // Fonts Tab
+            colorOptions.map(({ key, label, description }) => (
+              <div key={key} className="space-y-2">
+                <label className="flex flex-col">
+                  <span className="text-sm font-medium">{label}</span>
+                  <span className="text-xs text-muted-foreground">{description}</span>
+                </label>
+                <select
+                  value={selectedFonts[key]}
+                  onChange={(e) => updateFont(key, e.target.value)}
+                  className="w-full px-2 py-1 rounded bg-muted border border-border text-sm"
+                >
+                  {fonts.map((font) => (
+                    <option
+                      key={font.family}
+                      value={font.family}
+                      style={{ fontFamily: font.family }}
+                    >
+                      {font.family}
+                    </option>
+                  ))}
+                </select>
+                <div
+                  className="text-sm p-2 bg-background rounded border border-border"
+                  style={{ fontFamily: selectedFonts[key] }}
+                >
+                  Preview Text
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
