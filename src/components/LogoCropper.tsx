@@ -44,16 +44,6 @@ const LogoCropper: React.FC<LogoCropperProps> = ({ imageUrl, onCrop, onCancel })
 
       if (canvas && ctx && img) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Draw checkerboard pattern for transparency
-        const squareSize = 8;
-        for (let i = 0; i < canvas.width; i += squareSize) {
-          for (let j = 0; j < canvas.height; j += squareSize) {
-            ctx.fillStyle = (i + j) % (squareSize * 2) === 0 ? '#fff' : '#e5e5e5';
-            ctx.fillRect(i, j, squareSize, squareSize);
-          }
-        }
-
         ctx.save();
         ctx.translate(position.x, position.y);
         ctx.scale(scale, scale);
@@ -134,7 +124,7 @@ const LogoCropper: React.FC<LogoCropperProps> = ({ imageUrl, onCrop, onCancel })
       size
     );
 
-    onCrop(croppedCanvas.toDataURL('image/png'));
+    onCrop(croppedCanvas.toDataURL());
   };
 
   return (
