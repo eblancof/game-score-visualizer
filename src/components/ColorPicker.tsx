@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button } from './ui/button';
 import { Paintbrush, RotateCcw, ChevronRight } from 'lucide-react';
 import { TextColors } from '../hooks/useTextColors';
@@ -16,6 +16,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   onReset
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
 
   const colorOptions = [
     { key: 'competition', label: 'Competition', description: 'Competition name color' },
@@ -31,12 +32,26 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div 
       className={cn(
         "fixed right-0 top-1/2 -translate-y-1/2 z-50 transition-transform duration-300",
         !isOpen && "translate-x-full"
       )}
+      ref={pickerRef}
     >
       <Button
         variant="default"

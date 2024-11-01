@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from './ui/button';
 import { useLogos } from '../hooks/useLogos';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Check, X } from 'lucide-react';
 import { Logo } from '../hooks/useLogos';
 import CornerLogos from './CornerLogos';
+import LogoCropper from './LogoCropper';
 
 const PreviewCard: React.FC<{
   logos: Logo[];
@@ -14,7 +15,7 @@ const PreviewCard: React.FC<{
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const updateWidth = () => {
       if (containerRef.current) {
         setContainerWidth(containerRef.current.offsetWidth);
@@ -60,6 +61,7 @@ const PreviewCard: React.FC<{
 const LogoManager: React.FC = () => {
   const { logos, addLogo, updateLogo, removeLogo, updateLogoPosition } = useLogos();
   const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
+  const [cropImage, setCropImage] = useState<{ id: string; url: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (file: File) => {
@@ -69,16 +71,22 @@ const LogoManager: React.FC = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === 'string') {
-          const img = new Image();
-          img.onload = () => {
-            updateLogo(selectedLogo, { url: reader.result as string });
-          };
-          img.src = reader.result;
+          setCropImage({
+            id: selectedLogo,
+            url: reader.result
+          });
         }
       };
       reader.readAsDataURL(file);
     } catch (error) {
       console.error('Error reading file:', error);
+    }
+  };
+
+  const handleCroppedLogo = (croppedImageUrl: string) => {
+    if (cropImage) {
+      updateLogo(cropImage.id, { url: croppedImageUrl });
+      setCropImage(null);
     }
   };
 
@@ -177,6 +185,14 @@ const LogoManager: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {cropImage && (
+        <LogoCropper
+          imageUrl={cropImage.url}
+          onCrop={handleCroppedLogo}
+          onCancel={() => setCropImage(null)}
+        />
+      )}
     </div>
   );
 };

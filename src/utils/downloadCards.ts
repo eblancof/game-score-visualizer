@@ -16,6 +16,15 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
     
     // Clone the card and prepare it for export
     const clonedCard = cardElement.cloneNode(true) as HTMLElement;
+    
+    // Reset transform and scale to ensure 1:1 pixel ratio
+    const cardContent = clonedCard.querySelector('.absolute.inset-0.origin-top-left') as HTMLElement;
+    if (cardContent) {
+      cardContent.style.transform = 'none';
+      cardContent.style.width = '1080px';
+      cardContent.style.height = '1080px';
+    }
+    
     clonedCard.style.position = 'absolute';
     clonedCard.style.width = '1080px';
     clonedCard.style.height = '1080px';
@@ -38,6 +47,13 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       clonedCard.insertBefore(newBackground, clonedCard.firstChild);
     }
 
+    // Fix image aspect ratios
+    const images = clonedCard.getElementsByTagName('img');
+    Array.from(images).forEach(img => {
+      img.style.objectFit = 'contain';
+      img.style.width = img.style.height;
+    });
+
     // Ensure content is properly layered
     const contentDiv = clonedCard.querySelector('.w-full.h-full.p-\\[3\\%\\]') as HTMLElement;
     if (contentDiv) {
@@ -46,18 +62,12 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       contentDiv.style.backgroundColor = 'transparent';
     }
 
-
-    // Add export-specific styles
-    const exportStyles = document.createElement('style');
-
-    
-    clonedCard.appendChild(exportStyles);
     wrapper.appendChild(clonedCard);
     document.body.appendChild(wrapper);
 
     // Wait for all images to load
-    const images = clonedCard.getElementsByTagName('img');
-    await Promise.all(Array.from(images).map(img => {
+    const imageElements = clonedCard.getElementsByTagName('img');
+    await Promise.all(Array.from(imageElements).map(img => {
       if (img.complete) return Promise.resolve();
       return new Promise(resolve => {
         img.onload = resolve;
