@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
-import { Paintbrush, Type, RotateCcw, ChevronRight } from 'lucide-react';
+import { Paintbrush, Type, RotateCcw, ChevronRight, Plus, Minus } from 'lucide-react';
 import { TextColors } from '../hooks/useTextColors';
 import { cn } from '../lib/utils';
-import { useGoogleFonts } from '../hooks/useGoogleFonts';
+import { useTextColors } from '../hooks/useTextColors';
 
 interface ColorPickerProps {
   colors: TextColors;
@@ -21,7 +21,14 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   const [isOpen, setIsOpen] = React.useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('colors');
   const pickerRef = useRef<HTMLDivElement>(null);
-  const { fonts, selectedFonts, updateFont, resetFonts } = useGoogleFonts();
+  const { 
+    fonts, 
+    updateFont, 
+    updateFontSize,
+    availableFonts,
+    MIN_FONT_SIZE,
+    MAX_FONT_SIZE
+  } = useTextColors();
 
   const colorOptions = [
     { key: 'competition', label: 'Competition', description: 'Competition name color' },
@@ -95,7 +102,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              onClick={activeTab === 'colors' ? onReset : resetFonts}
+              onClick={onReset}
               className="h-8"
             >
               <RotateCcw className="w-3 h-3" />
@@ -145,25 +152,39 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                   <span className="text-xs text-muted-foreground">{description}</span>
                 </label>
                 <select
-                  value={selectedFonts[key]}
-                  onChange={(e) => updateFont(key, e.target.value)}
+                  value={fonts[key as keyof TextColors].family}
+                  onChange={(e) => updateFont(key as keyof TextColors, e.target.value)}
                   className="w-full px-2 py-1 rounded bg-muted border border-border text-sm"
                 >
-                  {fonts.map((font) => (
+                  {availableFonts.map((font) => (
                     <option
-                      key={font.family}
-                      value={font.family}
-                      style={{ fontFamily: font.family }}
+                      key={font}
+                      value={font}
                     >
-                      {font.family}
+                      {font}
                     </option>
                   ))}
                 </select>
-                <div
-                  className="text-sm p-2 bg-background rounded border border-border"
-                  style={{ fontFamily: selectedFonts[key] }}
-                >
-                  Preview Text
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => updateFontSize(key as keyof TextColors, -1)}
+                    disabled={fonts[key as keyof TextColors].size <= MIN_FONT_SIZE}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </Button>
+                  <div className="flex-1 text-center text-sm">
+                    {Math.round(fonts[key as keyof TextColors].size)}px
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => updateFontSize(key as keyof TextColors, 1)}
+                    disabled={fonts[key as keyof TextColors].size >= MAX_FONT_SIZE}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             ))

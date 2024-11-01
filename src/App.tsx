@@ -6,7 +6,6 @@ import GameScoreVisualizer from './tools/GameScoreVisualizer';
 import SingleGameVisualizer from './tools/SingleGameVisualizer';
 import LogoManager from './components/LogoManager';
 import BackgroundManager from './components/BackgroundManager';
-import FontManager from './components/font/FontManager';
 import NotFound from './components/NotFound';
 import { Tool } from './types/tool';
 
@@ -41,7 +40,6 @@ const App: React.FC = () => (
         ))}
         <Route path="/settings" element={<LogoManager />} />
         <Route path="/backgrounds" element={<BackgroundManager />} />
-        <Route path="/fonts" element={<FontManager />} />
         <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>

@@ -101,6 +101,8 @@ const DraggableLogo: React.FC<DraggableLogoProps> = ({
     }
   });
 
+  const size = ((logo.size || 100) / 100) * 15;
+
   return (
     <animated.div
       {...bind()}
@@ -114,9 +116,10 @@ const DraggableLogo: React.FC<DraggableLogoProps> = ({
         transform: 'translate(-50%, -50%)',
         cursor: 'grab',
         touchAction: 'none',
-        borderRadius: '0.5rem'
+        borderRadius: '0.5rem',
+        width: `${size}%`
       }}
-      className={`w-[15%] aspect-square ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-white' : ''}`}
+      className={`aspect-square ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-white' : ''}`}
     >
       {logo.url ? (
         <img

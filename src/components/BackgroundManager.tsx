@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Button } from './ui/button';
 import { Image as ImageIcon, Trash2, Check, X } from 'lucide-react';
 import { useBackgrounds } from '../hooks/useBackgrounds';
-import ImageCropper from './ImageCropper';
+import ImageCropper from './common/ImageCropper.tsx';
 
 const BackgroundManager: React.FC = () => {
   const {

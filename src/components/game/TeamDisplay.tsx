@@ -2,6 +2,7 @@ import React from 'react';
 import { Team } from '../../types/gameData';
 import { TeamLogo } from './TeamLogo';
 import { TextColors } from '../../hooks/useTextColors';
+import { useTextColors } from '../../hooks/useTextColors';
 
 interface TeamDisplayProps {
   team: Team;
@@ -16,6 +17,7 @@ export const TeamDisplay: React.FC<TeamDisplayProps> = ({
   className = '',
   textColors
 }) => {
+  const { fonts } = useTextColors();
   const flexDirection = alignment === 'left' ? 'flex-row' : 'flex-row-reverse';
   
   return (
@@ -24,8 +26,9 @@ export const TeamDisplay: React.FC<TeamDisplayProps> = ({
       <div 
         className="font-semibold text-center flex-1"
         style={{ 
-          fontSize: '20.41px',
-          color: textColors?.teamName
+          color: textColors?.teamName,
+          fontFamily: fonts.teamName.family,
+          fontSize: `${fonts.teamName.size}px`
         }}
       >
         {team.club.name.toUpperCase()}

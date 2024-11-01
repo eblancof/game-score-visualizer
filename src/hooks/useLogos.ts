@@ -5,6 +5,7 @@ export interface Logo {
   url: string;
   position: { x: number; y: number };
   section: 'top' | 'bottom';
+  size: number;
 }
 
 const STORAGE_KEY = 'basketball-tools-logos';
@@ -13,6 +14,10 @@ const DEFAULT_POSITIONS = {
   top: { x: 0, y: 0 },
   bottom: { x: 0, y: 0 }
 };
+
+const MIN_SIZE = 50;
+const MAX_SIZE = 200;
+const DEFAULT_SIZE = 100;
 
 export function useLogos() {
   const [logos, setLogos] = useState<Logo[]>(() => {
@@ -38,7 +43,8 @@ export function useLogos() {
       id: `logo-${Date.now()}`,
       url: '',
       position: DEFAULT_POSITIONS[section],
-      section
+      section,
+      size: DEFAULT_SIZE
     };
     setLogos(current => [...current, newLogo]);
     return newLogo.id;
@@ -64,5 +70,24 @@ export function useLogos() {
     );
   };
 
-  return { logos, addLogo, updateLogo, removeLogo, updateLogoPosition };
+  const updateLogoSize = (id: string, size: number) => {
+    const clampedSize = Math.min(Math.max(size, MIN_SIZE), MAX_SIZE);
+    setLogos(current =>
+      current.map(logo =>
+        logo.id === id ? { ...logo, size: clampedSize } : logo
+      )
+    );
+  };
+
+  return {
+    logos,
+    addLogo,
+    updateLogo,
+    removeLogo,
+    updateLogoPosition,
+    updateLogoSize,
+    MIN_SIZE,
+    MAX_SIZE,
+    DEFAULT_SIZE
+  };
 }

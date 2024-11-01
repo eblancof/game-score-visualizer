@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { Button } from './ui/button';
 import { useLogos } from '../hooks/useLogos';
-import { Plus, Trash2, Check, X } from 'lucide-react';
+import { Plus, Trash2, Minus } from 'lucide-react';
 import { Logo } from '../hooks/useLogos';
 import CornerLogos from './CornerLogos';
-import LogoCropper from './LogoCropper';
+import ImageCropper from './common/ImageCropper.tsx';
 
 const PreviewCard: React.FC<{
   logos: Logo[];
@@ -28,7 +28,10 @@ const PreviewCard: React.FC<{
   }, []);
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 aspect-square" ref={containerRef}>
+    <div
+      className="bg-white rounded-xl shadow-md p-6 aspect-square"
+      ref={containerRef}
+    >
       <div className="w-full h-full flex flex-col justify-between">
         <CornerLogos
           logos={logos}
@@ -59,21 +62,33 @@ const PreviewCard: React.FC<{
 };
 
 const LogoManager: React.FC = () => {
-  const { logos, addLogo, updateLogo, removeLogo, updateLogoPosition } = useLogos();
+  const {
+    logos,
+    addLogo,
+    updateLogo,
+    removeLogo,
+    updateLogoPosition,
+    updateLogoSize,
+    MIN_SIZE,
+    MAX_SIZE,
+  } = useLogos();
   const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
-  const [cropImage, setCropImage] = useState<{ id: string; url: string } | null>(null);
+  const [cropImage, setCropImage] = useState<{
+    id: string;
+    url: string;
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (file: File) => {
     if (!selectedLogo) return;
-    
+
     try {
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === 'string') {
           setCropImage({
             id: selectedLogo,
-            url: reader.result
+            url: reader.result,
           });
         }
       };
@@ -99,16 +114,22 @@ const LogoManager: React.FC = () => {
     setSelectedLogo(id);
   };
 
+  const selectedLogoData = selectedLogo
+    ? logos.find((l) => l.id === selectedLogo)
+    : null;
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="bg-card rounded-xl shadow-md p-6 mb-8 border border-border/50">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold text-foreground">Logo Settings</h2>
+          <h2 className="text-lg font-semibold text-foreground">
+            Logo Settings
+          </h2>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-[1fr,auto] gap-8 items-start">
           <div className="w-full max-w-md mx-auto">
-            <PreviewCard 
+            <PreviewCard
               logos={logos}
               onLogoPositionUpdate={updateLogoPosition}
               selectedLogo={selectedLogo}
@@ -141,10 +162,10 @@ const LogoManager: React.FC = () => {
               </div>
             </div>
 
-            {selectedLogo && (
+            {selectedLogo && selectedLogoData && (
               <div className="bg-muted p-4 rounded-lg border border-border/50">
                 <h3 className="font-medium mb-2">Selected Logo</h3>
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <input
                     type="file"
                     accept="image/*"
@@ -156,17 +177,53 @@ const LogoManager: React.FC = () => {
                     id="logo-upload"
                     ref={fileInputRef}
                   />
+
+                  <div className="space-y-2">
+                    <label className="text-sm text-muted-foreground">
+                      Logo Size
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() =>
+                          updateLogoSize(
+                            selectedLogo,
+                            (selectedLogoData.size || 100) - 10
+                          )
+                        }
+                        disabled={(selectedLogoData.size || 100) <= MIN_SIZE}
+                      >
+                        <Minus className="w-4 h-4" />
+                      </Button>
+                      <div className="flex-1 text-center text-sm">
+                        {Math.round(selectedLogoData.size || 100)}%
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() =>
+                          updateLogoSize(
+                            selectedLogo,
+                            (selectedLogoData.size || 100) + 10
+                          )
+                        }
+                        disabled={(selectedLogoData.size || 100) >= MAX_SIZE}
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
                   <Button
                     variant="outline"
                     size="sm"
                     className="w-full"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    {logos.find(l => l.id === selectedLogo)?.url 
-                      ? 'Change Image'
-                      : 'Upload Image'
-                    }
+                    {selectedLogoData.url ? 'Change Image' : 'Upload Image'}
                   </Button>
+
                   <Button
                     variant="destructive"
                     size="sm"
@@ -187,7 +244,7 @@ const LogoManager: React.FC = () => {
       </div>
 
       {cropImage && (
-        <LogoCropper
+        <ImageCropper
           imageUrl={cropImage.url}
           onCrop={handleCroppedLogo}
           onCancel={() => setCropImage(null)}
