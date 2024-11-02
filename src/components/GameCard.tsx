@@ -2,20 +2,18 @@ import React, { useRef, useEffect, useState } from 'react';
 import { GameData } from '../types/gameData';
 import { Logo } from '../hooks/useLogos';
 import { useBackgrounds } from '../hooks/useBackgrounds';
-import { TextColors } from '../hooks/useTextColors';
+import { useTextColors } from '../hooks/useTextColors';
 import CornerLogos from './CornerLogos';
 import { GameMatch } from './game/GameMatch';
 
 interface GameCardProps {
   games: GameData[];
   logos: Logo[];
-  textColors?: TextColors;
 }
 
 export const GameCard: React.FC<GameCardProps> = ({ 
   games, 
   logos,
-  textColors
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -23,6 +21,7 @@ export const GameCard: React.FC<GameCardProps> = ({
   const gamesList = games.slice(0, maxGames);
   const { getSelectedBackground } = useBackgrounds();
   const selectedBackground = getSelectedBackground();
+  const { textColors } = useTextColors();
 
   useEffect(() => {
     const updateScale = () => {
@@ -78,7 +77,6 @@ export const GameCard: React.FC<GameCardProps> = ({
               <GameMatch 
                 key={game.id} 
                 game={game}
-                textColors={textColors}
               />
             ))}
           </div>

@@ -4,6 +4,7 @@ import { Logo } from '../hooks/useLogos';
 import { useBackgrounds } from '../hooks/useBackgrounds';
 import { TextColors } from '../hooks/useTextColors';
 import { useTextColors } from '../hooks/useTextColors';
+import { useShieldSize } from '../hooks/useShieldSize';
 import CornerLogos from './CornerLogos';
 import { TeamLogo } from './game/TeamLogo';
 import { GameScore } from './game/GameScore';
@@ -11,19 +12,18 @@ import { GameScore } from './game/GameScore';
 interface SingleGameCardProps {
   game: GameData;
   logos: Logo[];
-  textColors?: TextColors;
 }
 
 const SingleGameCard: React.FC<SingleGameCardProps> = ({ 
   game, 
   logos,
-  textColors
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const { getSelectedBackground } = useBackgrounds();
   const selectedBackground = getSelectedBackground();
-  const { fonts } = useTextColors();
+  const { textColors, fonts } = useTextColors();
+  const { shieldSizes } = useShieldSize();
 
   useEffect(() => {
     const updateScale = () => {
@@ -127,7 +127,6 @@ const SingleGameCard: React.FC<SingleGameCardProps> = ({
                 localScore={game.localScore}
                 visitorScore={game.visitorScore}
                 className="px-[64.8px] py-[43.2px] bg-gray-100 rounded-2xl shadow-inner"
-                textColors={textColors}
               />
 
               <div className="flex flex-col items-center gap-[43.2px] flex-1">

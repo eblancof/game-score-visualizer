@@ -1,21 +1,18 @@
 import React from 'react';
-import { TextColors } from '../../hooks/useTextColors';
 import { useTextColors } from '../../hooks/useTextColors';
 
 interface GameScoreProps {
   localScore: number | null;
   visitorScore: number | null;
   className?: string;
-  textColors?: TextColors;
 }
 
 export const GameScore: React.FC<GameScoreProps> = ({ 
   localScore, 
   visitorScore, 
   className = '',
-  textColors
 }) => {
-  const { fonts } = useTextColors();
+  const { textColors, fonts } = useTextColors();
   const scoreStyle = {
     color: textColors?.score,
     fontFamily: fonts.score.family,

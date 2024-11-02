@@ -14,38 +14,58 @@ const DEFAULT_SIZES: ShieldSizes = {
 const MIN_SIZE = 30;
 const MAX_SIZE = 100;
 
+let listeners: (() => void)[] = [];
+
+const state = {
+  shieldSizes: DEFAULT_SIZES
+};
+
+const notifyListeners = () => {
+  listeners.forEach(listener => listener());
+};
+
 export function useShieldSize() {
-  const [shieldSizes, setShieldSizes] = useState<ShieldSizes>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : DEFAULT_SIZES;
-    } catch {
-      return DEFAULT_SIZES;
-    }
-  });
+  const [, forceUpdate] = useState({});
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(shieldSizes));
-    } catch (error) {
-      console.error('Error saving shield sizes:', error);
-    }
-  }, [shieldSizes]);
+    const listener = () => forceUpdate({});
+    listeners.push(listener);
+    return () => {
+      listeners = listeners.filter(l => l !== listener);
+    };
+  }, []);
 
   const updateShieldSize = (team: keyof ShieldSizes, size: number) => {
     const clampedSize = Math.min(Math.max(size, MIN_SIZE), MAX_SIZE);
-    setShieldSizes(prev => ({
-      ...prev,
+    state.shieldSizes = {
+      ...state.shieldSizes,
       [team]: clampedSize
-    }));
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.shieldSizes));
+    notifyListeners();
   };
 
   const resetSizes = () => {
-    setShieldSizes(DEFAULT_SIZES);
+    state.shieldSizes = DEFAULT_SIZES;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.shieldSizes));
+    notifyListeners();
   };
 
+  // Initialize state from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        state.shieldSizes = JSON.parse(stored);
+        notifyListeners();
+      }
+    } catch (error) {
+      console.error('Error loading shield sizes:', error);
+    }
+  }, []);
+
   return {
-    shieldSizes,
+    shieldSizes: state.shieldSizes,
     updateShieldSize,
     resetSizes,
     MIN_SIZE,

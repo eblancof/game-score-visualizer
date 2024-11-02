@@ -17,10 +17,11 @@ export const TeamLogo: React.FC<TeamLogoProps> = ({ team, className = '', type }
     <img
       src={getValidImageUrl(team)}
       alt={team.club.name}
-      className={`rounded-full object-cover shadow-sm ring-1 ring-black/5 ${className}`}
+      className={`rounded-full object-cover shadow-lg ring-2 ring-black/10 ${className}`}
       style={{ 
         width: `${size}px`,
-        height: `${size}px`
+        height: `${size}px`,
+        filter: 'drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2))'
       }}
       loading="eager"
       onError={(e) => {

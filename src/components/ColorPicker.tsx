@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
-import { Paintbrush, Type, RotateCcw, ChevronRight, Plus, Minus, Shield } from 'lucide-react';
+import { Paintbrush, Type, RotateCcw, ChevronRight, Shield } from 'lucide-react';
 import { TextColors } from '../hooks/useTextColors';
 import { cn } from '../lib/utils';
 import { useTextColors } from '../hooks/useTextColors';
@@ -24,7 +24,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   const pickerRef = useRef<HTMLDivElement>(null);
   const { 
     fonts, 
-    updateFont, 
+    updateFont,
     updateFontSize,
     availableFonts,
     MIN_FONT_SIZE,
@@ -50,6 +50,12 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
       onColorChange(key, value);
     }
+  };
+
+  const handleFontSizeChange = (key: keyof TextColors, value: number) => {
+    const currentSize = fonts[key].size;
+    const change = value - currentSize;
+    updateFontSize(key, change);
   };
 
   useEffect(() => {
@@ -185,26 +191,19 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                     </option>
                   ))}
                 </select>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => updateFontSize(key as keyof TextColors, -1)}
-                    disabled={fonts[key as keyof TextColors].size <= MIN_FONT_SIZE}
-                  >
-                    <Minus className="w-4 h-4" />
-                  </Button>
-                  <div className="flex-1 text-center text-sm">
-                    {Math.round(fonts[key as keyof TextColors].size)}px
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Size: {Math.round(fonts[key as keyof TextColors].size)}px</span>
+                    <span>{MIN_FONT_SIZE}px - {MAX_FONT_SIZE}px</span>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => updateFontSize(key as keyof TextColors, 1)}
-                    disabled={fonts[key as keyof TextColors].size >= MAX_FONT_SIZE}
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
+                  <input
+                    type="range"
+                    min={MIN_FONT_SIZE}
+                    max={MAX_FONT_SIZE}
+                    value={fonts[key as keyof TextColors].size}
+                    onChange={(e) => handleFontSizeChange(key as keyof TextColors, Number(e.target.value))}
+                    className="w-full accent-primary"
+                  />
                 </div>
               </div>
             ))
@@ -217,26 +216,19 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                   <span className="text-sm font-medium">Local Team Shield</span>
                   <span className="text-xs text-muted-foreground">Size of the local team's shield</span>
                 </label>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => updateShieldSize('local', shieldSizes.local - 5)}
-                    disabled={shieldSizes.local <= MIN_SIZE}
-                  >
-                    <Minus className="w-4 h-4" />
-                  </Button>
-                  <div className="flex-1 text-center text-sm">
-                    {shieldSizes.local}px
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Size: {shieldSizes.local}px</span>
+                    <span>{MIN_SIZE}px - {MAX_SIZE}px</span>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => updateShieldSize('local', shieldSizes.local + 5)}
-                    disabled={shieldSizes.local >= MAX_SIZE}
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
+                  <input
+                    type="range"
+                    min={MIN_SIZE}
+                    max={MAX_SIZE}
+                    value={shieldSizes.local}
+                    onChange={(e) => updateShieldSize('local', Number(e.target.value))}
+                    className="w-full accent-primary"
+                  />
                 </div>
               </div>
 
@@ -245,26 +237,19 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                   <span className="text-sm font-medium">Visitor Team Shield</span>
                   <span className="text-xs text-muted-foreground">Size of the visitor team's shield</span>
                 </label>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => updateShieldSize('visitor', shieldSizes.visitor - 5)}
-                    disabled={shieldSizes.visitor <= MIN_SIZE}
-                  >
-                    <Minus className="w-4 h-4" />
-                  </Button>
-                  <div className="flex-1 text-center text-sm">
-                    {shieldSizes.visitor}px
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Size: {shieldSizes.visitor}px</span>
+                    <span>{MIN_SIZE}px - {MAX_SIZE}px</span>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => updateShieldSize('visitor', shieldSizes.visitor + 5)}
-                    disabled={shieldSizes.visitor >= MAX_SIZE}
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
+                  <input
+                    type="range"
+                    min={MIN_SIZE}
+                    max={MAX_SIZE}
+                    value={shieldSizes.visitor}
+                    onChange={(e) => updateShieldSize('visitor', Number(e.target.value))}
+                    className="w-full accent-primary"
+                  />
                 </div>
               </div>
             </>

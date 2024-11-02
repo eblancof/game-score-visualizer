@@ -1,20 +1,17 @@
 import React from 'react';
 import { GameData } from '../../types/gameData';
-import { TextColors } from '../../hooks/useTextColors';
 import { useTextColors } from '../../hooks/useTextColors';
 
 interface GameInfoProps {
   game: GameData;
   className?: string;
-  textColors?: TextColors;
 }
 
 export const GameInfo: React.FC<GameInfoProps> = ({ 
   game, 
   className = '',
-  textColors
 }) => {
-  const { fonts } = useTextColors();
+  const { textColors, fonts } = useTextColors();
   
   return (
     <div className={`text-center ${className}`}>
