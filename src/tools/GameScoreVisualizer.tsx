@@ -23,7 +23,7 @@ const GameScoreVisualizer: React.FC = () => {
   const { logos } = useLogos();
   const { textColors, updateTextColor, resetColors } = useTextColors();
   const { getSelectedBackground } = useBackgrounds();
-  const { shieldSizes } = useShieldSize();
+  const { shieldSize } = useShieldSize();
 
   const fetchGames = useCallback(async (start: Date, end: Date) => {
     setLoading(true);
@@ -78,7 +78,7 @@ const GameScoreVisualizer: React.FC = () => {
           cards={cards} 
           logos={logos} 
           textColors={textColors}
-          key={`${shieldSizes.local}-${shieldSizes.visitor}`} // Force re-render on shield size changes
+          key={`shield-size-${shieldSize}`}
         />
       ) : (
         <GameList cards={cards} />

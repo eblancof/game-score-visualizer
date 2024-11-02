@@ -13,6 +13,12 @@ export interface TextColors {
 export interface FontSettings {
   family: string;
   size: number;
+  weight: number;
+}
+
+export interface ScoreBackground {
+  color: string;
+  opacity: number;
 }
 
 const DEFAULT_COLORS: TextColors = {
@@ -23,10 +29,15 @@ const DEFAULT_COLORS: TextColors = {
 };
 
 const DEFAULT_FONTS: Record<keyof TextColors, FontSettings> = {
-  competition: { family: 'Helvetica', size: 32.4 },
-  dateTime: { family: 'Helvetica', size: 18.14 },
-  teamName: { family: 'Helvetica', size: 20.41 },
-  score: { family: 'Helvetica', size: 25.92 }
+  competition: { family: 'Montserrat', size: 20, weight: 600 },
+  dateTime: { family: 'Montserrat', size: 20, weight: 500 },
+  teamName: { family: 'Montserrat', size: 24, weight: 600 },
+  score: { family: 'Montserrat', size: 26, weight: 700 }
+};
+
+const DEFAULT_SCORE_BACKGROUND: ScoreBackground = {
+  color: '#F3F4F6',
+  opacity: 0.8
 };
 
 const MIN_FONT_SIZE = 12;
@@ -34,25 +45,29 @@ const MAX_FONT_SIZE = 48;
 
 const STORAGE_KEY = 'basketball-tools-text-colors';
 const FONTS_STORAGE_KEY = 'basketball-tools-fonts';
+const SCORE_BG_STORAGE_KEY = 'basketball-tools-score-background';
 
 const AVAILABLE_FONTS = [
-  'Helvetica',
-  'Arial',
-  'Times New Roman',
-  'Georgia',
-  'Verdana',
-  'Tahoma',
-  'Trebuchet MS',
-  'Impact'
+  'Montserrat',
+  'Roboto',
+  'Oswald',
+  'Bebas Neue',
+  'Anton',
+  'Teko',
+  'Barlow Condensed',
+  'Fjalla One',
+  'Russo One',
+  'Black Ops One'
 ];
+
+const AVAILABLE_WEIGHTS = [400, 500, 600, 700];
 
 // Load all fonts at startup
 WebFont.load({
-  custom: {
-    families: AVAILABLE_FONTS,
-    urls: [
-      'https://fonts.googleapis.com/css2?family=Arial&family=Georgia&family=Helvetica&family=Impact&family=Tahoma&family=Times+New+Roman&family=Trebuchet+MS&family=Verdana&display=swap'
-    ]
+  google: {
+    families: AVAILABLE_FONTS.map(font => 
+      `${font}:${AVAILABLE_WEIGHTS.join(',')}`
+    )
   }
 });
 
@@ -60,7 +75,8 @@ let listeners: (() => void)[] = [];
 
 const state = {
   textColors: DEFAULT_COLORS,
-  fonts: DEFAULT_FONTS
+  fonts: DEFAULT_FONTS,
+  scoreBackground: DEFAULT_SCORE_BACKGROUND
 };
 
 const notifyListeners = () => {
@@ -97,6 +113,15 @@ export function useTextColors() {
     notifyListeners();
   }, []);
 
+  const updateFontWeight = useCallback((key: keyof TextColors, weight: number) => {
+    state.fonts = {
+      ...state.fonts,
+      [key]: { ...state.fonts[key], weight }
+    };
+    localStorage.setItem(FONTS_STORAGE_KEY, JSON.stringify(state.fonts));
+    notifyListeners();
+  }, []);
+
   const updateFontSize = useCallback((key: keyof TextColors, change: number) => {
     const currentSize = state.fonts[key].size;
     const newSize = Math.min(Math.max(currentSize + change, MIN_FONT_SIZE), MAX_FONT_SIZE);
@@ -106,6 +131,15 @@ export function useTextColors() {
       [key]: { ...state.fonts[key], size: newSize }
     };
     localStorage.setItem(FONTS_STORAGE_KEY, JSON.stringify(state.fonts));
+    notifyListeners();
+  }, []);
+
+  const updateScoreBackground = useCallback((updates: Partial<ScoreBackground>) => {
+    state.scoreBackground = {
+      ...state.scoreBackground,
+      ...updates
+    };
+    localStorage.setItem(SCORE_BG_STORAGE_KEY, JSON.stringify(state.scoreBackground));
     notifyListeners();
   }, []);
 
@@ -123,9 +157,11 @@ export function useTextColors() {
       state.textColors = DEFAULT_COLORS;
     }
     state.fonts = DEFAULT_FONTS;
+    state.scoreBackground = DEFAULT_SCORE_BACKGROUND;
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.textColors));
     localStorage.setItem(FONTS_STORAGE_KEY, JSON.stringify(state.fonts));
+    localStorage.setItem(SCORE_BG_STORAGE_KEY, JSON.stringify(state.scoreBackground));
     notifyListeners();
   }, [getSelectedBackground]);
 
@@ -133,12 +169,16 @@ export function useTextColors() {
     try {
       const storedColors = localStorage.getItem(STORAGE_KEY);
       const storedFonts = localStorage.getItem(FONTS_STORAGE_KEY);
+      const storedScoreBg = localStorage.getItem(SCORE_BG_STORAGE_KEY);
       
       if (storedColors) {
         state.textColors = JSON.parse(storedColors);
       }
       if (storedFonts) {
         state.fonts = JSON.parse(storedFonts);
+      }
+      if (storedScoreBg) {
+        state.scoreBackground = JSON.parse(storedScoreBg);
       }
       notifyListeners();
     } catch (error) {
@@ -149,12 +189,16 @@ export function useTextColors() {
   return {
     textColors: state.textColors,
     fonts: state.fonts,
+    scoreBackground: state.scoreBackground,
     updateTextColor,
     updateFont,
+    updateFontWeight,
     updateFontSize,
+    updateScoreBackground,
     resetColors,
     MIN_FONT_SIZE,
     MAX_FONT_SIZE,
-    availableFonts: AVAILABLE_FONTS
+    availableFonts: AVAILABLE_FONTS,
+    availableWeights: AVAILABLE_WEIGHTS
   };
 }

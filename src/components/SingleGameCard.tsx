@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from 'react';
 import { GameData } from '../types/gameData';
 import { Logo } from '../hooks/useLogos';
 import { useBackgrounds } from '../hooks/useBackgrounds';
-import { TextColors } from '../hooks/useTextColors';
 import { useTextColors } from '../hooks/useTextColors';
 import { useShieldSize } from '../hooks/useShieldSize';
 import CornerLogos from './CornerLogos';
@@ -23,7 +22,7 @@ const SingleGameCard: React.FC<SingleGameCardProps> = ({
   const { getSelectedBackground } = useBackgrounds();
   const selectedBackground = getSelectedBackground();
   const { textColors, fonts } = useTextColors();
-  const { shieldSizes } = useShieldSize();
+  const { shieldSize } = useShieldSize();
 
   useEffect(() => {
     const updateScale = () => {
@@ -110,7 +109,6 @@ const SingleGameCard: React.FC<SingleGameCardProps> = ({
                 <TeamLogo 
                   team={game.localTeam} 
                   className="ring-2 ring-black/10" 
-                  type="local"
                 />
                 <h3 
                   style={{ 
@@ -133,7 +131,6 @@ const SingleGameCard: React.FC<SingleGameCardProps> = ({
                 <TeamLogo 
                   team={game.visitorTeam} 
                   className="ring-2 ring-black/10" 
-                  type="visitor"
                 />
                 <h3 
                   style={{ 

@@ -1,23 +1,14 @@
 import { useState, useEffect } from 'react';
 
-export interface ShieldSizes {
-  local: number;
-  visitor: number;
-}
-
 const STORAGE_KEY = 'basketball-tools-shield-sizes';
-const DEFAULT_SIZES: ShieldSizes = {
-  local: 57,
-  visitor: 57
-};
-
+const DEFAULT_SIZE = 75;
 const MIN_SIZE = 30;
 const MAX_SIZE = 100;
 
 let listeners: (() => void)[] = [];
 
 const state = {
-  shieldSizes: DEFAULT_SIZES
+  shieldSize: DEFAULT_SIZE
 };
 
 const notifyListeners = () => {
@@ -35,19 +26,16 @@ export function useShieldSize() {
     };
   }, []);
 
-  const updateShieldSize = (team: keyof ShieldSizes, size: number) => {
+  const updateShieldSize = (size: number) => {
     const clampedSize = Math.min(Math.max(size, MIN_SIZE), MAX_SIZE);
-    state.shieldSizes = {
-      ...state.shieldSizes,
-      [team]: clampedSize
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.shieldSizes));
+    state.shieldSize = clampedSize;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.shieldSize));
     notifyListeners();
   };
 
-  const resetSizes = () => {
-    state.shieldSizes = DEFAULT_SIZES;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.shieldSizes));
+  const resetSize = () => {
+    state.shieldSize = DEFAULT_SIZE;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.shieldSize));
     notifyListeners();
   };
 
@@ -56,18 +44,18 @@ export function useShieldSize() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        state.shieldSizes = JSON.parse(stored);
+        state.shieldSize = JSON.parse(stored);
         notifyListeners();
       }
     } catch (error) {
-      console.error('Error loading shield sizes:', error);
+      console.error('Error loading shield size:', error);
     }
   }, []);
 
   return {
-    shieldSizes: state.shieldSizes,
+    shieldSize: state.shieldSize,
     updateShieldSize,
-    resetSizes,
+    resetSize,
     MIN_SIZE,
     MAX_SIZE
   };
