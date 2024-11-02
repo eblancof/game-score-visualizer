@@ -14,11 +14,16 @@ export interface FontSettings {
   family: string;
   size: number;
   weight: number;
+  textShadow: string;
 }
 
 export interface ScoreBackground {
   color: string;
   opacity: number;
+}
+
+export interface ShieldSettings {
+  dropShadow: string;
 }
 
 const DEFAULT_COLORS: TextColors = {
@@ -29,15 +34,19 @@ const DEFAULT_COLORS: TextColors = {
 };
 
 const DEFAULT_FONTS: Record<keyof TextColors, FontSettings> = {
-  competition: { family: 'Montserrat', size: 20, weight: 600 },
-  dateTime: { family: 'Montserrat', size: 20, weight: 500 },
-  teamName: { family: 'Montserrat', size: 24, weight: 600 },
-  score: { family: 'Montserrat', size: 26, weight: 700 }
+  competition: { family: 'Montserrat', size: 20, weight: 600, textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)' },
+  dateTime: { family: 'Montserrat', size: 20, weight: 500, textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)' },
+  teamName: { family: 'Montserrat', size: 24, weight: 600, textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)' },
+  score: { family: 'Montserrat', size: 26, weight: 700, textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)' }
 };
 
 const DEFAULT_SCORE_BACKGROUND: ScoreBackground = {
   color: '#F3F4F6',
   opacity: 0.8
+};
+
+const DEFAULT_SHIELD_SETTINGS: ShieldSettings = {
+  dropShadow: '2px 4px 6px rgba(0, 0, 0, 0.2)'
 };
 
 const MIN_FONT_SIZE = 12;
@@ -46,6 +55,7 @@ const MAX_FONT_SIZE = 48;
 const STORAGE_KEY = 'basketball-tools-text-colors';
 const FONTS_STORAGE_KEY = 'basketball-tools-fonts';
 const SCORE_BG_STORAGE_KEY = 'basketball-tools-score-background';
+const SHIELD_SETTINGS_KEY = 'basketball-tools-shield-settings';
 
 const AVAILABLE_FONTS = [
   'Montserrat',
@@ -62,7 +72,6 @@ const AVAILABLE_FONTS = [
 
 const AVAILABLE_WEIGHTS = [400, 500, 600, 700];
 
-// Load all fonts at startup
 WebFont.load({
   google: {
     families: AVAILABLE_FONTS.map(font => 
@@ -76,7 +85,8 @@ let listeners: (() => void)[] = [];
 const state = {
   textColors: DEFAULT_COLORS,
   fonts: DEFAULT_FONTS,
-  scoreBackground: DEFAULT_SCORE_BACKGROUND
+  scoreBackground: DEFAULT_SCORE_BACKGROUND,
+  shieldSettings: DEFAULT_SHIELD_SETTINGS
 };
 
 const notifyListeners = () => {
@@ -122,6 +132,15 @@ export function useTextColors() {
     notifyListeners();
   }, []);
 
+  const updateTextShadow = useCallback((key: keyof TextColors, textShadow: string) => {
+    state.fonts = {
+      ...state.fonts,
+      [key]: { ...state.fonts[key], textShadow }
+    };
+    localStorage.setItem(FONTS_STORAGE_KEY, JSON.stringify(state.fonts));
+    notifyListeners();
+  }, []);
+
   const updateFontSize = useCallback((key: keyof TextColors, change: number) => {
     const currentSize = state.fonts[key].size;
     const newSize = Math.min(Math.max(currentSize + change, MIN_FONT_SIZE), MAX_FONT_SIZE);
@@ -143,6 +162,15 @@ export function useTextColors() {
     notifyListeners();
   }, []);
 
+  const updateShieldSettings = useCallback((updates: Partial<ShieldSettings>) => {
+    state.shieldSettings = {
+      ...state.shieldSettings,
+      ...updates
+    };
+    localStorage.setItem(SHIELD_SETTINGS_KEY, JSON.stringify(state.shieldSettings));
+    notifyListeners();
+  }, []);
+
   const resetColors = useCallback(async () => {
     const background = getSelectedBackground();
     if (background) {
@@ -158,10 +186,12 @@ export function useTextColors() {
     }
     state.fonts = DEFAULT_FONTS;
     state.scoreBackground = DEFAULT_SCORE_BACKGROUND;
+    state.shieldSettings = DEFAULT_SHIELD_SETTINGS;
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.textColors));
     localStorage.setItem(FONTS_STORAGE_KEY, JSON.stringify(state.fonts));
     localStorage.setItem(SCORE_BG_STORAGE_KEY, JSON.stringify(state.scoreBackground));
+    localStorage.setItem(SHIELD_SETTINGS_KEY, JSON.stringify(state.shieldSettings));
     notifyListeners();
   }, [getSelectedBackground]);
 
@@ -170,6 +200,7 @@ export function useTextColors() {
       const storedColors = localStorage.getItem(STORAGE_KEY);
       const storedFonts = localStorage.getItem(FONTS_STORAGE_KEY);
       const storedScoreBg = localStorage.getItem(SCORE_BG_STORAGE_KEY);
+      const storedShieldSettings = localStorage.getItem(SHIELD_SETTINGS_KEY);
       
       if (storedColors) {
         state.textColors = JSON.parse(storedColors);
@@ -179,6 +210,9 @@ export function useTextColors() {
       }
       if (storedScoreBg) {
         state.scoreBackground = JSON.parse(storedScoreBg);
+      }
+      if (storedShieldSettings) {
+        state.shieldSettings = JSON.parse(storedShieldSettings);
       }
       notifyListeners();
     } catch (error) {
@@ -190,11 +224,14 @@ export function useTextColors() {
     textColors: state.textColors,
     fonts: state.fonts,
     scoreBackground: state.scoreBackground,
+    shieldSettings: state.shieldSettings,
     updateTextColor,
     updateFont,
     updateFontWeight,
     updateFontSize,
+    updateTextShadow,
     updateScoreBackground,
+    updateShieldSettings,
     resetColors,
     MIN_FONT_SIZE,
     MAX_FONT_SIZE,

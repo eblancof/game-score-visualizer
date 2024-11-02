@@ -2,6 +2,7 @@ import React from 'react';
 import { Team } from '../../types/gameData';
 import { getValidImageUrl } from '../../utils/url';
 import { useShieldSize } from '../../hooks/useShieldSize';
+import { useTextColors } from '../../hooks/useTextColors';
 
 interface TeamLogoProps {
   team: Team;
@@ -11,6 +12,7 @@ interface TeamLogoProps {
 
 export const TeamLogo: React.FC<TeamLogoProps> = ({ team, className = '', type }) => {
   const { shieldSize } = useShieldSize();
+  const { shieldSettings } = useTextColors();
 
   return (
     <img
@@ -20,7 +22,7 @@ export const TeamLogo: React.FC<TeamLogoProps> = ({ team, className = '', type }
       style={{ 
         width: `${shieldSize}px`,
         height: `${shieldSize}px`,
-        filter: 'drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2))'
+        filter: `drop-shadow(${shieldSettings.dropShadow})`
       }}
       loading="eager"
       onError={(e) => {

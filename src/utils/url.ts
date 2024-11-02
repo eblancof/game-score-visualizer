@@ -4,9 +4,13 @@ export const isValidUrl = (url: string | undefined): boolean => {
   if (!url || url.trim() === '') return false;
   
   try {
-    // Add protocol if missing
-    const urlToTest = url.startsWith('http') ? url : `https://${url}`;
-    new URL(urlToTest);
+    // Only try to construct URL if it has a protocol
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      new URL(url);
+      return true;
+    }
+    // Try with https:// prefix
+    new URL(`https://${url}`);
     return true;
   } catch {
     return false;
@@ -23,5 +27,12 @@ export const getValidImageUrl = (team: Team): string => {
     return `https://api.clupik.com${team.shieldUrl}`;
   }
   
-  return isValidUrl(team.shieldUrl) ? team.shieldUrl : fallbackUrl;
+  // Handle absolute URLs
+  if (team.shieldUrl.startsWith('http://') || team.shieldUrl.startsWith('https://')) {
+    return isValidUrl(team.shieldUrl) ? team.shieldUrl : fallbackUrl;
+  }
+  
+  // Try to construct a valid URL with https://
+  const urlWithProtocol = `https://${team.shieldUrl}`;
+  return isValidUrl(urlWithProtocol) ? urlWithProtocol : fallbackUrl;
 };

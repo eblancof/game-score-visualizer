@@ -28,7 +28,8 @@ export const TeamDisplay: React.FC<TeamDisplayProps> = ({
           color: textColors?.teamName,
           fontFamily: fonts.teamName.family,
           fontSize: `${fonts.teamName.size}px`,
-          textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)'
+          fontWeight: fonts.teamName.weight,
+          textShadow: fonts.teamName.textShadow
         }}
       >
         {team.club.name.toUpperCase()}

@@ -29,8 +29,11 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     updateFont,
     updateFontSize,
     updateFontWeight,
+    updateTextShadow,
     scoreBackground,
     updateScoreBackground,
+    shieldSettings,
+    updateShieldSettings,
     availableFonts,
     availableWeights,
     MIN_FONT_SIZE,
@@ -62,6 +65,21 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     const currentSize = fonts[key].size;
     const change = value - currentSize;
     updateFontSize(key, change);
+  };
+
+  const handleShadowChange = (key: keyof TextColors, value: number) => {
+    const shadow = `2px 2px ${value}px rgba(0, 0, 0, 0.2)`;
+    updateTextShadow(key, shadow);
+  };
+
+  const handleShieldShadowChange = (value: number) => {
+    const shadow = `2px 4px ${value}px rgba(0, 0, 0, 0.2)`;
+    updateShieldSettings({ dropShadow: shadow });
+  };
+
+  const getShadowSize = (shadow: string) => {
+    const match = shadow.match(/(\d+)px/);
+    return match ? parseInt(match[1]) : 4;
   };
 
   useEffect(() => {
@@ -241,16 +259,9 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                   value={fonts[key as keyof TextColors].family}
                   onChange={(e) => updateFont(key as keyof TextColors, e.target.value)}
                   className="w-full px-2 py-1 rounded bg-muted border border-border text-sm"
-                  style={{ fontFamily: fonts[key as keyof TextColors].family }}
                 >
                   {availableFonts.map((font) => (
-                    <option
-                      key={font}
-                      value={font}
-                      style={{ fontFamily: font }}
-                    >
-                      {font}
-                    </option>
+                    <option key={font} value={font}>{font}</option>
                   ))}
                 </select>
 
@@ -284,38 +295,66 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                   />
                 </div>
 
-                <div 
-                  className="p-2 bg-background rounded border border-border"
-                  style={{ 
-                    fontFamily: fonts[key as keyof TextColors].family,
-                    fontWeight: fonts[key as keyof TextColors].weight
-                  }}
-                >
-                  Preview Text
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Text Shadow: {getShadowSize(fonts[key as keyof TextColors].textShadow)}px</span>
+                    <span>0px - 10px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="10"
+                    value={getShadowSize(fonts[key as keyof TextColors].textShadow)}
+                    onChange={(e) => handleShadowChange(key as keyof TextColors, Number(e.target.value))}
+                    className="w-full accent-primary"
+                  />
                 </div>
               </div>
             ))
           )}
 
           {activeTab === 'shields' && (
-            <div className="space-y-2">
-              <label className="flex flex-col">
-                <span className="text-sm font-medium">Team Shield Size</span>
-                <span className="text-xs text-muted-foreground">Size of team shields</span>
-              </label>
+            <div className="space-y-4">
               <div className="space-y-2">
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Size: {shieldSize}px</span>
-                  <span>{MIN_SIZE}px - {MAX_SIZE}px</span>
+                <label className="flex flex-col">
+                  <span className="text-sm font-medium">Shield Size</span>
+                  <span className="text-xs text-muted-foreground">Size of team shields</span>
+                </label>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Size: {shieldSize}px</span>
+                    <span>{MIN_SIZE}px - {MAX_SIZE}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={MIN_SIZE}
+                    max={MAX_SIZE}
+                    value={shieldSize}
+                    onChange={(e) => updateShieldSize(Number(e.target.value))}
+                    className="w-full accent-primary"
+                  />
                 </div>
-                <input
-                  type="range"
-                  min={MIN_SIZE}
-                  max={MAX_SIZE}
-                  value={shieldSize}
-                  onChange={(e) => updateShieldSize(Number(e.target.value))}
-                  className="w-full accent-primary"
-                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="flex flex-col">
+                  <span className="text-sm font-medium">Shield Shadow</span>
+                  <span className="text-xs text-muted-foreground">Shadow intensity for shields</span>
+                </label>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Shadow: {getShadowSize(shieldSettings.dropShadow)}px</span>
+                    <span>0px - 10px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="10"
+                    value={getShadowSize(shieldSettings.dropShadow)}
+                    onChange={(e) => handleShieldShadowChange(Number(e.target.value))}
+                    className="w-full accent-primary"
+                  />
+                </div>
               </div>
             </div>
           )}
