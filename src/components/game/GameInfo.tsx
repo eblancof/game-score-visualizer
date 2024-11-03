@@ -18,7 +18,9 @@ export const GameInfo: React.FC<GameInfoProps> = ({
       <span style={{ 
         color: textColors?.dateTime,
         fontFamily: fonts.dateTime.family,
-        fontSize: `${fonts.dateTime.size}px`
+        fontWeight: fonts.dateTime.weight,
+        fontSize: `${fonts.dateTime.size}px`,
+        textShadow: fonts.dateTime.textShadow
       }}>
         {new Date(game.date).toLocaleDateString('es-ES', {
           weekday: 'long',
@@ -35,7 +37,9 @@ export const GameInfo: React.FC<GameInfoProps> = ({
       <span style={{ 
         color: textColors?.competition,
         fontFamily: fonts.competition.family,
-        fontSize: `${fonts.competition.size}px`
+        fontWeight: fonts.competition.weight,
+        fontSize: `${fonts.competition.size}px`,
+        textShadow: fonts.competition.textShadow
       }}>
         {game.competition.name.toUpperCase()}
       </span>

@@ -34,10 +34,10 @@ const DEFAULT_COLORS: TextColors = {
 };
 
 const DEFAULT_FONTS: Record<keyof TextColors, FontSettings> = {
-  competition: { family: 'Montserrat', size: 20, weight: 600, textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)' },
-  dateTime: { family: 'Montserrat', size: 20, weight: 500, textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)' },
-  teamName: { family: 'Montserrat', size: 24, weight: 600, textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)' },
-  score: { family: 'Montserrat', size: 26, weight: 700, textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)' }
+  competition: { family: 'Montserrat', size: 20, weight: 600, textShadow: '0px 0px 0px rgba(0, 0, 0, 0.2)' },
+  dateTime: { family: 'Montserrat', size: 20, weight: 500, textShadow: '0px 0px 0px rgba(0, 0, 0, 0.2)' },
+  teamName: { family: 'Montserrat', size: 24, weight: 600, textShadow: '0px 0px 0px rgba(0, 0, 0, 0.2)' },
+  score: { family: 'Montserrat', size: 26, weight: 700, textShadow: '0px 0px 0px rgba(0, 0, 0, 0.2)' }
 };
 
 const DEFAULT_SCORE_BACKGROUND: ScoreBackground = {
@@ -46,7 +46,7 @@ const DEFAULT_SCORE_BACKGROUND: ScoreBackground = {
 };
 
 const DEFAULT_SHIELD_SETTINGS: ShieldSettings = {
-  dropShadow: '2px 4px 6px rgba(0, 0, 0, 0.2)'
+  dropShadow: '0px 0px 0px rgba(0, 0, 0, 0.2)'
 };
 
 const MIN_FONT_SIZE = 12;
@@ -132,7 +132,8 @@ export function useTextColors() {
     notifyListeners();
   }, []);
 
-  const updateTextShadow = useCallback((key: keyof TextColors, textShadow: string) => {
+  const updateTextShadow = useCallback((key: keyof TextColors, shadowSize: number) => {
+    const textShadow = `${shadowSize}px ${shadowSize}px ${shadowSize * 2}px rgba(0, 0, 0, 0.2)`;
     state.fonts = {
       ...state.fonts,
       [key]: { ...state.fonts[key], textShadow }
@@ -162,10 +163,11 @@ export function useTextColors() {
     notifyListeners();
   }, []);
 
-  const updateShieldSettings = useCallback((updates: Partial<ShieldSettings>) => {
+  const updateShieldSettings = useCallback((shadowSize: number) => {
+    const dropShadow = `${shadowSize}px ${shadowSize}px ${shadowSize * 2}px rgba(0, 0, 0, 0.2)`;
     state.shieldSettings = {
       ...state.shieldSettings,
-      ...updates
+      dropShadow
     };
     localStorage.setItem(SHIELD_SETTINGS_KEY, JSON.stringify(state.shieldSettings));
     notifyListeners();

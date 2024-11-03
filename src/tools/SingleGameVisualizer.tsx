@@ -7,7 +7,7 @@ import SingleGameExport from '../components/SingleGameExport';
 import { useLogos } from '../hooks/useLogos';
 import { useTextColors } from '../hooks/useTextColors';
 import { useShieldSize } from '../hooks/useShieldSize';
-import ColorPicker from '../components/ColorPicker';
+import ColorPicker from '../components/CollapsibleBar';
 import { Button } from '../components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 

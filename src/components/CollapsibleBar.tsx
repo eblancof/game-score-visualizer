@@ -1,16 +1,73 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
-import { Paintbrush, Type, RotateCcw, ChevronRight, Shield } from 'lucide-react';
+import { Paintbrush, Type, RotateCcw, ChevronRight, Shield, ChevronDown } from 'lucide-react';
 import { TextColors } from '../hooks/useTextColors';
 import { cn } from '../lib/utils';
 import { useTextColors } from '../hooks/useTextColors';
 import { useShieldSize } from '../hooks/useShieldSize';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ColorPickerProps {
   colors: TextColors;
   onColorChange: (key: keyof TextColors, color: string) => void;
   onReset: () => void;
 }
+
+interface CollapsibleSectionProps {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+  isExpanded: boolean;
+  onToggle: () => void;
+}
+
+interface ExpandedSections {
+  colors: string | null;
+  fonts: string | null;
+  shields: string | null;
+}
+
+const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
+  title,
+  description,
+  children,
+  isExpanded,
+  onToggle,
+}) => {
+  return (
+    <div className="space-y-2">
+      <Button
+        variant="ghost"
+        className="w-full flex items-center justify-between p-2 hover:bg-accent/50"
+        onClick={onToggle}
+      >
+        <div className="text-left">
+          <div className="text-sm font-medium">{title}</div>
+          <div className="text-xs text-muted-foreground">{description}</div>
+        </div>
+        <ChevronDown className={cn(
+          "w-4 h-4 transition-transform duration-200",
+          isExpanded ? "rotate-180" : ""
+        )} />
+      </Button>
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="p-2 space-y-2">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 type Tab = 'colors' | 'fonts' | 'shields';
 
@@ -23,6 +80,11 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   const [activeTab, setActiveTab] = useState<Tab>('colors');
   const pickerRef = useRef<HTMLDivElement>(null);
   const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const [expandedSections, setExpandedSections] = useState<ExpandedSections>({
+    colors: null,
+    fonts: null,
+    shields: null
+  });
   
   const { 
     fonts, 
@@ -68,18 +130,23 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   };
 
   const handleShadowChange = (key: keyof TextColors, value: number) => {
-    const shadow = `2px 2px ${value}px rgba(0, 0, 0, 0.2)`;
-    updateTextShadow(key, shadow);
+    updateTextShadow(key, value);
   };
 
   const handleShieldShadowChange = (value: number) => {
-    const shadow = `2px 4px ${value}px rgba(0, 0, 0, 0.2)`;
-    updateShieldSettings({ dropShadow: shadow });
+    updateShieldSettings(value);
   };
 
   const getShadowSize = (shadow: string) => {
     const match = shadow.match(/(\d+)px/);
-    return match ? parseInt(match[1]) : 4;
+    return match ? parseInt(match[1]) : 0;
+  };
+
+  const toggleSection = (tab: Tab, key: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [tab]: prev[tab] === key ? null : key
+    }));
   };
 
   useEffect(() => {
@@ -176,14 +243,13 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
           {activeTab === 'colors' && (
             <>
               {colorOptions.map(({ key, label, description }) => (
-                <div
+                <CollapsibleSection
                   key={key}
-                  className="space-y-2"
+                  title={label}
+                  description={description}
+                  isExpanded={expandedSections.colors === key}
+                  onToggle={() => toggleSection('colors', key)}
                 >
-                  <label className="flex flex-col">
-                    <span className="text-sm font-medium">{label}</span>
-                    <span className="text-xs text-muted-foreground">{description}</span>
-                  </label>
                   <div className="flex items-center gap-2">
                     <div className="relative">
                       <input
@@ -203,114 +269,123 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                       placeholder="#000000"
                     />
                   </div>
-                </div>
+                </CollapsibleSection>
               ))}
 
               <div className="space-y-2 pt-4 border-t border-border">
-                <label className="flex flex-col">
-                  <span className="text-sm font-medium">Score Background</span>
-                  <span className="text-xs text-muted-foreground">Background color for scores</span>
-                </label>
-                <div className="flex items-center gap-2">
-                  <div className="relative">
+                <CollapsibleSection
+                  title="Score Background"
+                  description="Background color for scores"
+                  isExpanded={expandedSections.colors === 'scoreBackground'}
+                  onToggle={() => toggleSection('colors', 'scoreBackground')}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <input
+                        type="color"
+                        value={scoreBackground.color}
+                        onChange={(e) => updateScoreBackground({ color: e.target.value })}
+                        className="w-8 h-8 rounded cursor-pointer"
+                      />
+                      <div className="absolute inset-0 rounded ring-1 ring-border pointer-events-none" />
+                    </div>
                     <input
-                      type="color"
+                      type="text"
                       value={scoreBackground.color}
                       onChange={(e) => updateScoreBackground({ color: e.target.value })}
-                      className="w-8 h-8 rounded cursor-pointer"
+                      className="flex-1 px-2 py-1 text-xs rounded bg-muted border border-border font-mono"
+                      pattern="^#[0-9A-Fa-f]{6}$"
+                      placeholder="#000000"
                     />
-                    <div className="absolute inset-0 rounded ring-1 ring-border pointer-events-none" />
                   </div>
-                  <input
-                    type="text"
-                    value={scoreBackground.color}
-                    onChange={(e) => updateScoreBackground({ color: e.target.value })}
-                    className="flex-1 px-2 py-1 text-xs rounded bg-muted border border-border font-mono"
-                    pattern="^#[0-9A-Fa-f]{6}$"
-                    placeholder="#000000"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Opacity: {Math.round(scoreBackground.opacity * 100)}%</span>
-                    <span>0% - 100%</span>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Opacity: {Math.round(scoreBackground.opacity * 100)}%</span>
+                      <span>0% - 100%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={scoreBackground.opacity * 100}
+                      onChange={(e) => updateScoreBackground({ opacity: Number(e.target.value) / 100 })}
+                      className="w-full accent-primary"
+                    />
                   </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={scoreBackground.opacity * 100}
-                    onChange={(e) => updateScoreBackground({ opacity: Number(e.target.value) / 100 })}
-                    className="w-full accent-primary"
-                  />
-                </div>
+                </CollapsibleSection>
               </div>
             </>
           )}
 
           {activeTab === 'fonts' && (
-            colorOptions.map(({ key, label, description }) => (
-              <div key={key} className="space-y-2">
-                <label className="flex flex-col">
-                  <span className="text-sm font-medium">{label}</span>
-                  <span className="text-xs text-muted-foreground">{description}</span>
-                </label>
-                <select
-                  value={fonts[key as keyof TextColors].family}
-                  onChange={(e) => updateFont(key as keyof TextColors, e.target.value)}
-                  className="w-full px-2 py-1 rounded bg-muted border border-border text-sm"
+            <>
+              {colorOptions.map(({ key, label, description }) => (
+                <CollapsibleSection
+                  key={key}
+                  title={label}
+                  description={description}
+                  isExpanded={expandedSections.fonts === `font-${key}`}
+                  onToggle={() => toggleSection('fonts', `font-${key}`)}
                 >
-                  {availableFonts.map((font) => (
-                    <option key={font} value={font}>{font}</option>
-                  ))}
-                </select>
-
-                <div className="space-y-2">
-                  <label className="text-xs text-muted-foreground">Font Weight</label>
                   <select
-                    value={fonts[key as keyof TextColors].weight}
-                    onChange={(e) => updateFontWeight(key as keyof TextColors, Number(e.target.value))}
+                    aria-label={`Font family for ${label}`}
+                    value={fonts[key as keyof TextColors].family}
+                    onChange={(e) => updateFont(key as keyof TextColors, e.target.value)}
                     className="w-full px-2 py-1 rounded bg-muted border border-border text-sm"
                   >
-                    {availableWeights.map((weight) => (
-                      <option key={weight} value={weight}>
-                        {weight}
-                      </option>
+                    {availableFonts.map((font) => (
+                      <option key={font} value={font}>{font}</option>
                     ))}
                   </select>
-                </div>
 
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Size: {Math.round(fonts[key as keyof TextColors].size)}px</span>
-                    <span>{MIN_FONT_SIZE}px - {MAX_FONT_SIZE}px</span>
+                  <div className="space-y-2">
+                    <label className="text-xs text-muted-foreground">Font Weight</label>
+                    <select
+                      aria-label={`Font weight for ${label}`}
+                      value={fonts[key as keyof TextColors].weight}
+                      onChange={(e) => updateFontWeight(key as keyof TextColors, Number(e.target.value))}
+                      className="w-full px-2 py-1 rounded bg-muted border border-border text-sm"
+                    >
+                      {availableWeights.map((weight) => (
+                        <option key={weight} value={weight}>
+                          {weight}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                  <input
-                    type="range"
-                    min={MIN_FONT_SIZE}
-                    max={MAX_FONT_SIZE}
-                    value={fonts[key as keyof TextColors].size}
-                    onChange={(e) => handleFontSizeChange(key as keyof TextColors, Number(e.target.value))}
-                    className="w-full accent-primary"
-                  />
-                </div>
 
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Text Shadow: {getShadowSize(fonts[key as keyof TextColors].textShadow)}px</span>
-                    <span>0px - 10px</span>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Size: {Math.round(fonts[key as keyof TextColors].size)}px</span>
+                      <span>{MIN_FONT_SIZE}px - {MAX_FONT_SIZE}px</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={MIN_FONT_SIZE}
+                      max={MAX_FONT_SIZE}
+                      value={fonts[key as keyof TextColors].size}
+                      onChange={(e) => handleFontSizeChange(key as keyof TextColors, Number(e.target.value))}
+                      className="w-full accent-primary"
+                    />
                   </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="10"
-                    value={getShadowSize(fonts[key as keyof TextColors].textShadow)}
-                    onChange={(e) => handleShadowChange(key as keyof TextColors, Number(e.target.value))}
-                    className="w-full accent-primary"
-                  />
-                </div>
-              </div>
-            ))
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Text Shadow: {getShadowSize(fonts[key as keyof TextColors].textShadow)}px</span>
+                      <span>0px - 10px</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      value={getShadowSize(fonts[key as keyof TextColors].textShadow)}
+                      onChange={(e) => handleShadowChange(key as keyof TextColors, Number(e.target.value))}
+                      className="w-full accent-primary"
+                    />
+                  </div>
+                </CollapsibleSection>
+              ))}
+            </>
           )}
 
           {activeTab === 'shields' && (

@@ -10,7 +10,7 @@ interface TeamLogoProps {
   type?: 'local' | 'visitor';
 }
 
-export const TeamLogo: React.FC<TeamLogoProps> = ({ team, className = '', type }) => {
+export const TeamLogo: React.FC<TeamLogoProps> = ({ team, className = '' }) => {
   const { shieldSize } = useShieldSize();
   const { shieldSettings } = useTextColors();
 

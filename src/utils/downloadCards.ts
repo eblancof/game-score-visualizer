@@ -47,12 +47,6 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       clonedCard.insertBefore(newBackground, clonedCard.firstChild);
     }
 
-    // Fix image aspect ratios
-    const images = clonedCard.getElementsByTagName('img');
-    Array.from(images).forEach(img => {
-      img.style.objectFit = 'contain';
-      img.style.width = img.style.height;
-    });
 
     // Ensure content is properly layered
     const contentDiv = clonedCard.querySelector('.w-full.h-full.p-\\[3\\%\\]') as HTMLElement;
@@ -64,16 +58,6 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
 
     wrapper.appendChild(clonedCard);
     document.body.appendChild(wrapper);
-
-    // Wait for all images to load
-    const imageElements = clonedCard.getElementsByTagName('img');
-    await Promise.all(Array.from(imageElements).map(img => {
-      if (img.complete) return Promise.resolve();
-      return new Promise(resolve => {
-        img.onload = resolve;
-        img.onerror = resolve;
-      });
-    }));
 
     // Wait for background image if it exists
     if (backgroundDiv) {
@@ -97,14 +81,7 @@ export const downloadCard = async (cardElement: HTMLElement, resolution: number,
       height: 1080,
       logging: false,
       imageTimeout: 0,
-      onclone: (document, element) => {
-        const images = element.getElementsByTagName('img');
-        Array.from(images).forEach(img => {
-          img.style.maxWidth = '100%';
-          img.style.maxHeight = '100%';
-          img.style.objectFit = 'contain';
-        });
-      }
+      
     });
 
     // Create the final canvas with the desired resolution

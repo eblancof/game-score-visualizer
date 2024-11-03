@@ -27,6 +27,9 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
   const [scale, setScale] = useState(1);
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  // Touch event handling
+  const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
+
   useEffect(() => {
     const image = new Image();
     image.src = imageUrl;
@@ -64,6 +67,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
     drawCanvas();
   }, [position, scale, imageLoaded]);
 
+  // Mouse event handlers
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -85,6 +89,56 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
 
   const handleMouseUp = () => {
     setIsDragging(false);
+  };
+
+  // Touch event handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      const touch = e.touches[0];
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        setStartPos({
+          x: touch.clientX - position.x,
+          y: touch.clientY - position.y
+        });
+      }
+    } else if (e.touches.length === 2) {
+      const distance = getTouchDistance(e.touches);
+      setLastTouchDistance(distance);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+    if (e.touches.length === 1 && isDragging) {
+      const touch = e.touches[0];
+      setPosition({
+        x: touch.clientX - startPos.x,
+        y: touch.clientY - startPos.y
+      });
+    } else if (e.touches.length === 2) {
+      const newDistance = getTouchDistance(e.touches);
+      if (lastTouchDistance !== null) {
+        const delta = newDistance - lastTouchDistance;
+        const zoomSensitivity = 0.005;
+        const newScale = Math.min(Math.max(0.1, scale * (1 + delta * zoomSensitivity)), 3);
+        setScale(newScale);
+      }
+      setLastTouchDistance(newDistance);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    setLastTouchDistance(null);
+  };
+
+  const getTouchDistance = (touches: React.TouchList) => {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
   };
 
   const handleWheel = (e: React.WheelEvent) => {
@@ -160,6 +214,9 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
             onWheel={handleWheel}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           />
           <img
             ref={imageRef}
@@ -172,7 +229,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
 
         <div className="flex justify-between items-center">
           <div className="text-sm text-muted-foreground">
-            Scroll to zoom • Drag to move
+            Scroll or pinch to zoom • Drag to move
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onCancel}>Cancel</Button>
@@ -186,5 +243,4 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
     </div>
   );
 };
-
 export default ImageCropper;

@@ -6,7 +6,7 @@ import { generateCards } from '../utils/cardGenerator';
 import GameSlider from '../components/GameSlider';
 import GameList from '../components/GameList';
 import ViewToggle from '../components/ViewToggle';
-import ColorPicker from '../components/ColorPicker';
+import ColorPicker from '../components/CollapsibleBar';
 import { useLogos } from '../hooks/useLogos';
 import { useTextColors } from '../hooks/useTextColors';
 import { useBackgrounds } from '../hooks/useBackgrounds';
