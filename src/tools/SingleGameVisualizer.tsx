@@ -19,7 +19,7 @@ const SingleGameVisualizer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { logos } = useLogos();
   const { textColors, updateTextColor, resetColors } = useTextColors();
-  const { shieldSizes } = useShieldSize();
+  const { shieldSize } = useShieldSize();
 
   const handleDateSelect = async (date: Date) => {
     setLoading(true);
@@ -78,7 +78,7 @@ const SingleGameVisualizer: React.FC = () => {
             game={selectedGame} 
             logos={logos}
             textColors={textColors}
-            key={`${shieldSizes.local}-${shieldSizes.visitor}`}
+            key={`shield-size-${shieldSize}`}
           />
         </div>
       )}

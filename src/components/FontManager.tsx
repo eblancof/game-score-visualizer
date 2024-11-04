@@ -1,32 +1,24 @@
-import React, { useRef } from 'react';
-import { Button } from './ui/button';
+import React, { useRef, useState } from 'react';
 import { Plus, Trash2, Check } from 'lucide-react';
+import { Button } from './ui/button';
 import { useFonts } from '../hooks/useFonts';
 
 const FontPreview: React.FC<{ family: string }> = ({ family }) => (
-  <div className="space-y-1">
-    <p className="font-medium" style={{ fontFamily: family, fontWeight: 400 }}>
-      Regular 400
-    </p>
-    <p className="font-medium" style={{ fontFamily: family, fontWeight: 500 }}>
-      Medium 500
-    </p>
-    <p className="font-medium" style={{ fontFamily: family, fontWeight: 600 }}>
-      SemiBold 600
-    </p>
-    <p className="font-medium" style={{ fontFamily: family, fontWeight: 700 }}>
-      Bold 700
-    </p>
+  <div className="grid grid-cols-2 gap-x-4 text-sm">
+    <p style={{ fontFamily: family, fontWeight: 400 }}>Regular 400</p>
+    <p style={{ fontFamily: family, fontWeight: 700 }}>Bold 700</p>
   </div>
 );
 
 const FontManager: React.FC = () => {
   const { fonts, addFont, removeFont } = useFonts();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
+  const handleFileChange = async (files: FileList | null) => {
+    if (!files) return;
+    const file = files[0];
+    if (file && (file.name.endsWith('.ttf') || file.name.endsWith('.otf'))) {
       try {
         await addFont(file);
         if (fileInputRef.current) {
@@ -36,6 +28,22 @@ const FontManager: React.FC = () => {
         console.error('Error adding font:', error);
       }
     }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    handleFileChange(e.dataTransfer.files);
   };
 
   return (
@@ -49,23 +57,13 @@ const FontManager: React.FC = () => {
         </div>
 
         <div className="space-y-6">
-          <div className="flex items-center justify-between gap-4">
-            <input
-              type="file"
-              accept=".otf,.ttf"
-              onChange={handleFileChange}
-              className="hidden"
-              ref={fileInputRef}
-            />
-            <Button
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full sm:w-auto"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Custom Font
-            </Button>
-          </div>
+          <input
+            type="file"
+            accept=".otf,.ttf"
+            onChange={(e) => handleFileChange(e.target.files)}
+            className="hidden"
+            ref={fileInputRef}
+          />
 
           <div className="space-y-4">
             <div className="text-sm font-medium text-muted-foreground mb-2">Google Fonts</div>
@@ -75,14 +73,13 @@ const FontManager: React.FC = () => {
                 .map(font => (
                   <div
                     key={font.id}
-                    className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border"
+                    className="flex items-center justify-between p-3 bg-muted rounded-lg border border-border"
                   >
                     <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1">
                         <p className="text-sm font-medium text-foreground">{font.family}</p>
                         <Check className="w-4 h-4 text-primary" />
                       </div>
-                      <p className="text-xs text-muted-foreground mb-3">Google Font</p>
                       <FontPreview family={font.family} />
                     </div>
                   </div>
@@ -98,32 +95,47 @@ const FontManager: React.FC = () => {
                 .map(font => (
                   <div
                     key={font.id}
-                    className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border group"
+                    className="flex items-center justify-between p-3 bg-muted rounded-lg border border-border group"
                   >
                     <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1">
                         <p className="text-sm font-medium text-foreground">{font.family}</p>
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => removeFont(font.id)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
                       </div>
-                      <p className="text-xs text-muted-foreground mb-3">
-                        Custom Font • {font.source}
-                      </p>
+                      <p className="text-xs text-muted-foreground mb-1">{font.source}</p>
                       <FontPreview family={font.family} />
                     </div>
                   </div>
                 ))}
-              {fonts.filter(font => font.type === 'custom').length === 0 && (
-                <div className="col-span-full text-center py-8 text-muted-foreground bg-muted rounded-lg border border-dashed border-border">
-                  No custom fonts added yet
-                </div>
-              )}
+            </div>
+          </div>
+
+          <div
+            className={`text-center py-8 text-muted-foreground bg-muted rounded-lg border-2 border-dashed transition-colors ${
+              isDragging ? 'border-primary bg-primary/5' : 'border-border'
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <div className="space-y-2">
+              <p>Drag and drop .ttf or .otf files here</p>
+              <p className="text-sm">or</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Browse Files
+              </Button>
             </div>
           </div>
         </div>
