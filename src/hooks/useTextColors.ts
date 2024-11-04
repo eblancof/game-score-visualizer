@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useBackgrounds } from './useBackgrounds';
 import { generateContrastingColors } from '../utils/colors';
-import WebFont from 'webfontloader';
+import { useFonts } from './useFonts';
 
 export interface TextColors {
   competition: string;
@@ -57,28 +57,7 @@ const FONTS_STORAGE_KEY = 'basketball-tools-fonts';
 const SCORE_BG_STORAGE_KEY = 'basketball-tools-score-background';
 const SHIELD_SETTINGS_KEY = 'basketball-tools-shield-settings';
 
-const AVAILABLE_FONTS = [
-  'Montserrat',
-  'Roboto',
-  'Oswald',
-  'Bebas Neue',
-  'Anton',
-  'Teko',
-  'Barlow Condensed',
-  'Fjalla One',
-  'Russo One',
-  'Black Ops One'
-];
-
 const AVAILABLE_WEIGHTS = [400, 500, 600, 700];
-
-WebFont.load({
-  google: {
-    families: AVAILABLE_FONTS.map(font => 
-      `${font}:${AVAILABLE_WEIGHTS.join(',')}`
-    )
-  }
-});
 
 let listeners: (() => void)[] = [];
 
@@ -95,6 +74,7 @@ const notifyListeners = () => {
 
 export function useTextColors() {
   const { getSelectedBackground } = useBackgrounds();
+  const { fonts: availableFonts } = useFonts();
   const [, forceUpdate] = useState({});
 
   useEffect(() => {
@@ -237,7 +217,7 @@ export function useTextColors() {
     resetColors,
     MIN_FONT_SIZE,
     MAX_FONT_SIZE,
-    availableFonts: AVAILABLE_FONTS,
+    availableFonts: availableFonts.map(font => font.family),
     availableWeights: AVAILABLE_WEIGHTS
   };
 }

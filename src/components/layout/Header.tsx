@@ -38,6 +38,12 @@ export const Header: React.FC<HeaderProps> = ({ tools }) => {
               <span className="text-accent-foreground">Background Settings</span>
             </>
           )}
+          {location.pathname === '/fonts' && (
+            <>
+              <span className="text-muted-foreground">/</span>
+              <span className="text-accent-foreground">Font Settings</span>
+            </>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <Link to="/backgrounds">
@@ -48,6 +54,11 @@ export const Header: React.FC<HeaderProps> = ({ tools }) => {
           <Link to="/settings">
             <Button variant="ghost" size="icon">
               <ImagePlus className="w-5 h-5" />
+            </Button>
+          </Link>
+          <Link to="/fonts">
+            <Button variant="ghost" size="icon">
+              <Type className="w-5 h-5" />
             </Button>
           </Link>
         </div>
