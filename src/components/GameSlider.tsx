@@ -6,11 +6,16 @@ import { GameCard } from './GameCard';
 import { downloadCard } from '../utils/downloadCards';
 import { Logo } from '../hooks/useLogos';
 import { TextColors } from '../hooks/useTextColors';
+import { TextElement } from '../hooks/useTextElements';
 
 interface GameSliderProps {
   cards: GameData[][];
   logos: Logo[];
   textColors?: TextColors;
+  textElements?: TextElement[];
+  onTextElementUpdate?: (id: string, updates: Partial<TextElement>) => void;
+  onTextElementSelect?: (id: string, position: { x: number; y: number }) => void;
+  selectedTextElement?: string | null;
 }
 
 const ExportOptions: React.FC = () => {
@@ -75,7 +80,11 @@ const ExportOptions: React.FC = () => {
 const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOptions } = ({ 
   cards, 
   logos,
-  textColors
+  textColors,
+  textElements,
+  onTextElementUpdate,
+  onTextElementSelect,
+  selectedTextElement
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentCardRef = useRef<HTMLDivElement>(null);
@@ -108,6 +117,10 @@ const GameSlider: React.FC<GameSliderProps> & { ExportOptions: typeof ExportOpti
                     games={cardGames} 
                     logos={logos}
                     textColors={textColors}
+                    textElements={textElements}
+                    onTextElementUpdate={onTextElementUpdate}
+                    onTextElementSelect={onTextElementSelect}
+                    selectedTextElement={selectedTextElement}
                   />
                 </div>
               ))}

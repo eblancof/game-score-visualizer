@@ -3,17 +3,27 @@ import { GameData } from '../types/gameData';
 import { Logo } from '../hooks/useLogos';
 import { useBackgrounds } from '../hooks/useBackgrounds';
 import { useTextColors } from '../hooks/useTextColors';
+import { TextElement as TextElementType } from '../hooks/useTextElements';
 import CornerLogos from './CornerLogos';
 import { GameMatch } from './game/GameMatch';
+import TextElement from './TextElement';
 
 interface GameCardProps {
   games: GameData[];
   logos: Logo[];
+  textElements?: TextElementType[];
+  onTextElementUpdate?: (id: string, updates: Partial<TextElementType>) => void;
+  onTextElementSelect?: (id: string, position: { x: number; y: number }) => void;
+  selectedTextElement?: string | null;
 }
 
 export const GameCard: React.FC<GameCardProps> = ({ 
   games, 
   logos,
+  textElements = [],
+  onTextElementUpdate,
+  onTextElementSelect,
+  selectedTextElement
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -27,7 +37,7 @@ export const GameCard: React.FC<GameCardProps> = ({
     const updateScale = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth;
-        setScale(containerWidth / 1080); // Base size is 1080px
+        setScale(containerWidth / 1080);
       }
     };
 
@@ -41,6 +51,7 @@ export const GameCard: React.FC<GameCardProps> = ({
       className="game-card relative w-full"
       style={{ aspectRatio: '1/1' }}
       ref={containerRef}
+      onClick={() => onTextElementSelect?.('', { x: 0, y: 0 })}
     >
       <div 
         className="absolute inset-0 origin-top-left"
@@ -87,8 +98,22 @@ export const GameCard: React.FC<GameCardProps> = ({
             section="bottom"
             containerWidth={1080}
           />
+
+          {/* Text Elements Layer */}
+          {textElements.map((element) => (
+            <TextElement
+              key={element.id}
+              element={element}
+              onUpdate={onTextElementUpdate!}
+              onSelect={onTextElementSelect!}
+              isSelected={selectedTextElement === element.id}
+              containerScale={scale}
+            />
+          ))}
         </div>
       </div>
     </div>
   );
 };
+
+export default GameCard;

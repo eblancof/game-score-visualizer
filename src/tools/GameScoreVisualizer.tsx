@@ -7,10 +7,13 @@ import GameSlider from '../components/GameSlider';
 import GameList from '../components/GameList';
 import ViewToggle from '../components/ViewToggle';
 import ColorPicker from '../components/CollapsibleBar';
+import FloatingTextButton from '../components/FloatingTextButton';
+import TextElementControls from '../components/TextElementControls';
 import { useLogos } from '../hooks/useLogos';
 import { useTextColors } from '../hooks/useTextColors';
 import { useBackgrounds } from '../hooks/useBackgrounds';
 import { useShieldSize } from '../hooks/useShieldSize';
+import { useTextElements } from '../hooks/useTextElements';
 
 const GameScoreVisualizer: React.FC = () => {
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -24,6 +27,9 @@ const GameScoreVisualizer: React.FC = () => {
   const { textColors, updateTextColor, resetColors } = useTextColors();
   const { getSelectedBackground } = useBackgrounds();
   const { shieldSize } = useShieldSize();
+  const { elements, addElement, updateElement, removeElement } = useTextElements();
+  const [selectedElement, setSelectedElement] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
 
   const fetchGames = useCallback(async (start: Date, end: Date) => {
     setLoading(true);
@@ -34,7 +40,6 @@ const GameScoreVisualizer: React.FC = () => {
       const generatedCards = generateCards(data);
       setCards(generatedCards);
 
-      // Generate new color palette based on background
       const background = getSelectedBackground();
       if (background) {
         await resetColors();
@@ -53,6 +58,21 @@ const GameScoreVisualizer: React.FC = () => {
     fetchGames(start, end);
   }, [fetchGames]);
 
+  const handleAddText = () => {
+    const newElementId = addElement();
+    setSelectedElement(newElementId);
+  };
+
+  const handleTextSelect = (id: string, position: { x: number; y: number }) => {
+    setSelectedElement(id);
+    setMenuPosition(position);
+  };
+
+  const handleCloseMenu = () => {
+    setSelectedElement(null);
+    setMenuPosition(null);
+  };
+
   return (
     <div>
       <DateRangePicker onDateChange={handleDateChange} />
@@ -63,11 +83,23 @@ const GameScoreVisualizer: React.FC = () => {
       </div>
 
       {view === 'slider' && (
-        <ColorPicker
-          colors={textColors}
-          onColorChange={updateTextColor}
-          onReset={resetColors}
-        />
+        <>
+          <ColorPicker
+            colors={textColors}
+            onColorChange={updateTextColor}
+            onReset={resetColors}
+          />
+          <FloatingTextButton onClick={handleAddText} />
+          {selectedElement && menuPosition && (
+            <TextElementControls
+              element={elements.find(e => e.id === selectedElement)!}
+              onUpdate={updateElement}
+              onRemove={removeElement}
+              onClose={handleCloseMenu}
+              position={menuPosition}
+            />
+          )}
+        </>
       )}
       
       {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
@@ -78,6 +110,10 @@ const GameScoreVisualizer: React.FC = () => {
           cards={cards} 
           logos={logos} 
           textColors={textColors}
+          textElements={elements}
+          onTextElementUpdate={updateElement}
+          onTextElementSelect={handleTextSelect}
+          selectedTextElement={selectedElement}
           key={`shield-size-${shieldSize}`}
         />
       ) : (
