@@ -8,6 +8,8 @@ export interface TextElement {
   fontFamily: string;
   color: string;
   rotation: number;
+  width?: number;
+  height?: number;
 }
 
 export function useTextElements() {
