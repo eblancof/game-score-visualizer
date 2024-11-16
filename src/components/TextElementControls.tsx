@@ -27,7 +27,8 @@ const TextElementControls: React.FC<TextElementControlsProps> = ({
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
-        transform: 'translate(-50%, calc(-100% - 10px))'
+        transform: 'translate(-50%, calc(-100% - 8px))',
+        transition: 'left 0.1s, top 0.1s'
       }}
     >
       <select
