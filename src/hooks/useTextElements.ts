@@ -17,7 +17,7 @@ export function useTextElements() {
   const addElement = useCallback(() => {
     const newElement: TextElement = {
       id: `text-${Date.now()}`,
-      text: 'New Text',
+      text: 'Double click to edit\nPress Enter for new line',
       position: { x: 0, y: 0 },
       fontSize: 24,
       fontFamily: 'Montserrat',

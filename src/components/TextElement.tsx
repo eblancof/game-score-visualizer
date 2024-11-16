@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useDrag } from '@use-gesture/react';
 import { animated, useSpring } from '@react-spring/web';
 import { TextElement as TextElementType } from '../hooks/useTextElements';
-import { RotateCw } from 'lucide-react';
+import { RotateCcw, RotateCw } from 'lucide-react';
 
 interface TextElementProps {
   element: TextElementType;
@@ -21,7 +21,6 @@ export const TextElement: React.FC<TextElementProps> = ({
 }) => {
   const elementRef = useRef<HTMLDivElement>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [isRotating, setIsRotating] = useState(false);
 
   const [{ x, y }, api] = useSpring(() => ({
     x: element.position.x * containerScale,
@@ -30,7 +29,6 @@ export const TextElement: React.FC<TextElementProps> = ({
   }));
 
   const bind = useDrag(({ offset: [ox, oy], last, event, first }) => {
-    if (isRotating) return;
     event?.stopPropagation();
 
     const scaledX = ox / containerScale;
@@ -63,38 +61,10 @@ export const TextElement: React.FC<TextElementProps> = ({
     enabled: !isEditing
   });
 
-  const handleRotation = (e: MouseEvent | TouchEvent) => {
-    if (!isRotating || !elementRef.current) return;
-    e.preventDefault();
-    
-    const rect = elementRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-    
-    const angle = Math.atan2(clientY - centerY, clientX - centerX);
-    const degrees = (angle * 180) / Math.PI;
-    
-    onUpdate(element.id, { rotation: degrees + 90 });
-  };
-
-  const handleRotateStart = (e: React.MouseEvent | React.TouchEvent) => {
-    e.stopPropagation();
-    setIsRotating(true);
-    document.addEventListener('mousemove', handleRotation);
-    document.addEventListener('touchmove', handleRotation);
-    document.addEventListener('mouseup', handleRotateEnd);
-    document.addEventListener('touchend', handleRotateEnd);
-  };
-
-  const handleRotateEnd = () => {
-    setIsRotating(false);
-    document.removeEventListener('mousemove', handleRotation);
-    document.removeEventListener('touchmove', handleRotation);
-    document.removeEventListener('mouseup', handleRotateEnd);
-    document.removeEventListener('touchend', handleRotateEnd);
+  const handleRotate = (direction: 'left' | 'right') => {
+    const currentRotation = element.rotation || 0;
+    const rotationDelta = direction === 'left' ? -15 : 15;
+    onUpdate(element.id, { rotation: currentRotation + rotationDelta });
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -117,12 +87,11 @@ export const TextElement: React.FC<TextElementProps> = ({
 
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     setIsEditing(false);
-    onUpdate(element.id, { text: e.target.textContent || element.text });
+    onUpdate(element.id, { text: e.target.innerText || element.text });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
+    if (e.key === 'Escape') {
       setIsEditing(false);
     }
   };
@@ -144,6 +113,7 @@ export const TextElement: React.FC<TextElementProps> = ({
         padding: '4px',
         borderRadius: '4px',
         border: isSelected ? '2px solid hsl(var(--primary))' : '2px solid transparent',
+        maxWidth: '80%',
       }}
     >
       <div
@@ -158,22 +128,37 @@ export const TextElement: React.FC<TextElementProps> = ({
           fontSize: `${element.fontSize}px`,
           transform: `rotate(${element.rotation}deg)`,
           textAlign: element.textAlign || 'left',
-          minWidth: '50px',
           outline: 'none',
           whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          minWidth: '50px',
+          minHeight: '1em',
         }}
       >
         {element.text}
       </div>
 
       {isSelected && (
-        <div
-          className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
-          onMouseDown={handleRotateStart}
-          onTouchStart={handleRotateStart}
-        >
-          <RotateCw className="w-3 h-3" />
-        </div>
+        <>
+          <button
+            className="absolute -left-6 top-1/2 -translate-y-1/2 w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRotate('left');
+            }}
+          >
+            <RotateCcw className="w-3 h-3" />
+          </button>
+          <button
+            className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRotate('right');
+            }}
+          >
+            <RotateCw className="w-3 h-3" />
+          </button>
+        </>
       )}
     </animated.div>
   );
