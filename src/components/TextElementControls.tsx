@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from './ui/button';
-import { Trash2, AlignLeft, AlignCenter, AlignRight, AlignJustify, Minus, Plus } from 'lucide-react';
+import { Trash2, AlignLeft, AlignCenter, AlignRight, AlignJustify, Minus, Plus, Bold, Italic } from 'lucide-react';
 import { TextElement } from '../hooks/useTextElements';
 import { useTextColors } from '../hooks/useTextColors';
 
@@ -115,6 +115,22 @@ const TextElementControls: React.FC<TextElementControlsProps> = ({
             className={element.textAlign === 'justify' ? 'bg-accent' : ''}
           >
             <AlignJustify className="w-4 h-4" />
+          </Button>
+          <Button
+            variant={element.fontWeight === 'bold' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => onUpdate(element.id, { fontWeight: element.fontWeight === 'bold' ? 'normal' : 'bold' })}
+            className="h-8 w-8"
+          >
+            <Bold className="w-4 h-4" />
+          </Button>
+          <Button
+            variant={element.fontStyle === 'italic' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => onUpdate(element.id, { fontStyle: element.fontStyle === 'italic' ? 'normal' : 'italic' })}
+            className="h-8 w-8"
+          >
+            <Italic className="w-4 h-4" />
           </Button>
         </div>
 

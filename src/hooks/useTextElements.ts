@@ -9,6 +9,8 @@ export interface TextElement {
   color: string;
   rotation: number;
   textAlign?: 'left' | 'center' | 'right' | 'justify';
+  fontWeight: 'normal' | 'bold';
+  fontStyle: 'normal' | 'italic';
 }
 
 export function useTextElements() {
@@ -17,13 +19,15 @@ export function useTextElements() {
   const addElement = useCallback(() => {
     const newElement: TextElement = {
       id: `text-${Date.now()}`,
-      text: 'Double click to edit\nPress Enter for new line',
+      text: 'Text',
       position: { x: 0, y: 0 },
       fontSize: 24,
       fontFamily: 'Montserrat',
       color: '#000000',
       rotation: 0,
-      textAlign: 'left'
+      textAlign: 'left',
+      fontWeight: 'normal',
+      fontStyle: 'normal'
     };
     setElements(prev => [...prev, newElement]);
     return newElement.id;

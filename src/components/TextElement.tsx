@@ -133,6 +133,8 @@ export const TextElement: React.FC<TextElementProps> = ({
           wordBreak: 'break-word',
           minWidth: '50px',
           minHeight: '1em',
+          fontWeight: element.fontWeight,
+          fontStyle: element.fontStyle,
         }}
       >
         {element.text}
