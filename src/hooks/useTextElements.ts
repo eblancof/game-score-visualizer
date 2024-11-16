@@ -8,8 +8,7 @@ export interface TextElement {
   fontFamily: string;
   color: string;
   rotation: number;
-  width?: number;
-  height?: number;
+  textAlign?: 'left' | 'center' | 'right' | 'justify';
 }
 
 export function useTextElements() {
@@ -19,11 +18,12 @@ export function useTextElements() {
     const newElement: TextElement = {
       id: `text-${Date.now()}`,
       text: 'New Text',
-      position: { x: 50, y: 50 },
+      position: { x: 0, y: 0 },
       fontSize: 24,
       fontFamily: 'Montserrat',
       color: '#000000',
-      rotation: 0
+      rotation: 0,
+      textAlign: 'left'
     };
     setElements(prev => [...prev, newElement]);
     return newElement.id;

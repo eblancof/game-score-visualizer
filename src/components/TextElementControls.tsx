@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from './ui/button';
-import { Trash2, RotateCcw, RotateCw, Minus, Plus, X } from 'lucide-react';
+import { Trash2, AlignLeft, AlignCenter, AlignRight, AlignJustify } from 'lucide-react';
 import { TextElement } from '../hooks/useTextElements';
 import { useTextColors } from '../hooks/useTextColors';
 
@@ -30,23 +30,11 @@ const TextElementControls: React.FC<TextElementControlsProps> = ({
         transform: 'translate(-50%, calc(-100% - 10px))'
       }}
     >
-      <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
-        <X className="w-4 h-4" />
-      </Button>
-
-      <input
-        type="text"
-        value={element.text}
-        onChange={(e) => onUpdate(element.id, { text: e.target.value })}
-        className="w-24 px-2 py-1 rounded bg-muted border border-border text-sm mx-2"
-        placeholder="Texto"
-      />
-
       <select
-        aria-label="Fuente"
+        aria-label="Font family"
         value={element.fontFamily}
         onChange={(e) => onUpdate(element.id, { fontFamily: e.target.value })}
-        className="w-24 px-2 py-1 rounded bg-muted border border-border text-sm mx-2"
+        className="w-32 px-2 py-1 rounded bg-muted border border-border text-sm mx-2"
       >
         {availableFonts.map((font) => (
           <option key={font} value={font} style={{ fontFamily: font }}>
@@ -62,39 +50,38 @@ const TextElementControls: React.FC<TextElementControlsProps> = ({
         className="w-8 h-8 rounded mx-2"
       />
 
-      <div className="flex items-center mx-2">
+      <div className="flex items-center gap-1 mx-2">
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
-          onClick={() => onUpdate(element.id, { fontSize: Math.max(12, element.fontSize - 2) })}
+          onClick={() => onUpdate(element.id, { textAlign: 'left' })}
+          className={element.textAlign === 'left' ? 'bg-accent' : ''}
         >
-          <Minus className="w-4 h-4" />
+          <AlignLeft className="w-4 h-4" />
         </Button>
-        <div className="px-2 text-sm">{element.fontSize}px</div>
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
-          onClick={() => onUpdate(element.id, { fontSize: Math.min(72, element.fontSize + 2) })}
+          onClick={() => onUpdate(element.id, { textAlign: 'center' })}
+          className={element.textAlign === 'center' ? 'bg-accent' : ''}
         >
-          <Plus className="w-4 h-4" />
+          <AlignCenter className="w-4 h-4" />
         </Button>
-      </div>
-
-      <div className="flex items-center mx-2">
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
-          onClick={() => onUpdate(element.id, { rotation: element.rotation - 15 })}
+          onClick={() => onUpdate(element.id, { textAlign: 'right' })}
+          className={element.textAlign === 'right' ? 'bg-accent' : ''}
         >
-          <RotateCcw className="w-4 h-4" />
+          <AlignRight className="w-4 h-4" />
         </Button>
-        <div className="px-2 text-sm">{element.rotation}°</div>
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
-          onClick={() => onUpdate(element.id, { rotation: element.rotation + 15 })}
+          onClick={() => onUpdate(element.id, { textAlign: 'justify' })}
+          className={element.textAlign === 'justify' ? 'bg-accent' : ''}
         >
-          <RotateCw className="w-4 h-4" />
+          <AlignJustify className="w-4 h-4" />
         </Button>
       </div>
 

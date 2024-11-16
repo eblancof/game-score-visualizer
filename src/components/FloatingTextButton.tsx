@@ -10,7 +10,7 @@ const FloatingTextButton: React.FC<FloatingTextButtonProps> = ({ onClick }) => {
   return (
     <Button
       onClick={onClick}
-      className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 bg-primary text-primary-foreground"
+      className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 bg-primary text-primary-foreground z-[100]"
     >
       <Type className="w-6 h-6" />
     </Button>
